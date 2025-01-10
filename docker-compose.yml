@@ -6,11 +6,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: laravel_app
+    container_name: keiba_simulation_app
     volumes:
       - ./keiba-simulation-app:/var/www
     networks:
-      - laravel
+      - keiba-simulation-app
     command: sh -c "php artisan migrate --force && php-fpm"
 
   # Nginx サービス
@@ -25,9 +25,9 @@ services:
     depends_on:
       - php
     networks:
-      - laravel
+      - keiba-simulation-app
 
 networks:
-  laravel:
+  keiba-simulation-app:
     driver: bridge
 
