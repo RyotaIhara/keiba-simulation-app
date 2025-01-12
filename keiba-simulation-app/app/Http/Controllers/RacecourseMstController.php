@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\RacecourseMstService;
+use App\Services\Crud\RacecourseMstService;
 use Illuminate\Http\Request;
 
 class RacecourseMstController extends Controller
