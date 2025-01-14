@@ -21,10 +21,7 @@ class RacecourseMstService extends CrudBase
 
     /** ユニークなカラムを指定してデータを1つ取得する **/
     public function getRacecourseMstByUniqueColumn($whereParams) {
-        foreach ($whereParams as $item) {
-
-        }
-        return $this->entityManager->getRepository(RacecourseMst::class)->findOneBy( $whereParams);
+        return $this->entityManager->getRepository(RacecourseMst::class)->findOneBy($whereParams);
     }
 
     /** racecourse_mstにデータを作成する **/
@@ -32,8 +29,8 @@ class RacecourseMstService extends CrudBase
     {
         $racecourseMst = new RacecourseMst();
 
-        $racecourseMst->setJyoCd($data['jyo_cd']);
-        $racecourseMst->setRacecourseName($data['racecourse_name']);
+        $racecourseMst->setJyoCd(isset($data['jyo_cd']) ? $data['jyo_cd'] : $data['jyoCd']);
+        $racecourseMst->setRacecourseName(isset($data['racecourse_name']) ? $data['racecourse_name'] : $data['racecourseName']);
 
         $this->entityManager->persist($racecourseMst);
         $this->entityManager->flush();
@@ -46,8 +43,8 @@ class RacecourseMstService extends CrudBase
         $racecourseMstRepository = $this->entityManager->getRepository(RacecourseMst::class);
         $racecourseMst = $racecourseMstRepository->find($id);
 
-        $racecourseMst->setJyoCd($data['jyo_cd']);
-        $racecourseMst->setRacecourseName($data['racecourse_name']);
+        $racecourseMst->setJyoCd(isset($data['jyo_cd']) ? $data['jyo_cd'] : $data['jyoCd']);
+        $racecourseMst->setRacecourseName(isset($data['racecourse_name']) ? $data['racecourse_name'] : $data['racecourseName']);
 
         $this->entityManager->persist($racecourseMst);
         $this->entityManager->flush();

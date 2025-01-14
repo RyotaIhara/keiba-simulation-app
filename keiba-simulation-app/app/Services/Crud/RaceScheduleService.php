@@ -27,13 +27,18 @@ class RaceScheduleService extends CrudBase
         return $this->entityManager->getRepository(RaceSchedule::class)->find($id);
     }
 
+    /** ユニークなカラムを指定してデータを1つ取得する **/
+    public function getRaceScheduleByUniqueColumn($whereParams) {
+        return $this->entityManager->getRepository(RaceSchedule::class)->findOneBy($whereParams);
+    }
+
     /** race_scheduleにデータを作成する **/
     public function createRaceSchedule(array $data)
     {
         $raceSchedule = new RaceSchedule();
 
-        $raceSchedule->setRaceDate($data['race_date']);
-        $raceSchedule->setJyoCd($data['jyo_cd']);
+        $raceSchedule->setRaceDate(isset($data['race_date']) ? $data['race_date'] : $data['raceDate']);
+        $raceSchedule->setJyoCd(isset($data['jyo_cd']) ? $data['jyo_cd'] : $data['jyoCd']);
 
         $this->entityManager->persist($raceSchedule);
         $this->entityManager->flush();
@@ -46,8 +51,8 @@ class RaceScheduleService extends CrudBase
         $raceScheduleRepository = $this->entityManager->getRepository(RaceSchedule::class);
         $raceSchedule = $raceScheduleRepository->find($id);
 
-        $raceSchedule->setRaceDate($data['race_date']);
-        $raceSchedule->setJyoCd($data['jyo_cd']);
+        $raceSchedule->setRaceDate(isset($data['race_date']) ? $data['race_date'] : $data['raceDate']);
+        $raceSchedule->setJyoCd(isset($data['jyo_cd']) ? $data['jyo_cd'] : $data['jyoCd']);
 
         $this->entityManager->persist($raceSchedule);
         $this->entityManager->flush();

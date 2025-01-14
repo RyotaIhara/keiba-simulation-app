@@ -14,7 +14,7 @@ class RaceSchedule
     #[ORM\Column(type: "integer")]
     private int $id;
 
-    #[ORM\Column(type: "date", name: "racecourse_name")]
+    #[ORM\Column(type: "date", name: "race_date")]
     private DateTime $raceDate;
 
     #[ORM\Column(type: "string", name: "jyo_cd")]

@@ -3,7 +3,9 @@
 namespace App\Services\Scraping;
 
 use App\Services\Scraping\ScrapingBase;
+use App\Services\Crud\RaceScheduleService;
 use App\Services\Crud\RacecourseMstService;
+use DateTime;
 
 require 'vendor/autoload.php';
 
@@ -29,41 +31,29 @@ class BatchRaceScheduleService extends ScrapingBase
                     $jyoName = '帯広';
                 }
 
-                var_dump($jyoName);
+                $racecourseMstService = app(RacecourseMstService::class);
+                $raceScheduleService = app(RaceScheduleService::class);
 
-                /*
-                $racecourseMstService = new RacecourseMstService();
                 $whereParams = [
-                    'racecourse_name' => $jyoName . '競馬場'
+                    'racecourseName' => $jyoName . '競馬場'
                 ];
                 $racecourseMst = $racecourseMstService->getRacecourseMstByUniqueColumn($whereParams);
 
-                var_dump($racecourseMst);
-                */
+                $date = new DateTime($year . '-' . $month . '-' . $day);
+                $jyoCd = $racecourseMst->getJyoCd();
 
-                /*
-                $racecourseMst = $getDataFunction->getRacecourseMst(
-                    [
-                        'racecourse_name' => $jyoName . '競馬場'
-                    ]
+                $createParams = array(
+                    'raceDate' => $date,
+                    'jyoCd' => $jyoCd,
                 );
 
-                $date = $year . '-' . $month . '-' . $day;
-                $jyoCd = $result[0]['jyo_cd'];
-
-                $params = array(
-                    'race_date' => $date,
-                    'jyo_cd' => $jyoCd,
-                );
-
-                if ($this->checkRaceSchedule($params, $getDataFunction)) {
-                    echo "すでに" . 'race_date=' . $date . '、jyo_cd=' . $jyoCd . "のデータが存在しています。 \n";
+                if (!empty($raceScheduleService->getRaceScheduleByUniqueColumn($createParams))) {
+                    echo "すでに" . 'race_date=' . $date->format('Y-m-d') . '、jyo_cd=' . $jyoCd . "のデータが存在しています。 \n";
                 } else {
                     // データがなければインサート
-                    $this->insertRaceSchedule($params);
-                    echo 'race_date=' . $date . '、jyo_cd=' . $jyoCd . "のデータ作成に成功しました。 \n";
+                    $raceScheduleService->createRaceSchedule($createParams);
+                    echo 'race_date=' . $date->format('Y-m-d') . '、jyo_cd=' . $jyoCd . "のデータ作成に成功しました。 \n";
                 }
-                */
             }
         });
     }

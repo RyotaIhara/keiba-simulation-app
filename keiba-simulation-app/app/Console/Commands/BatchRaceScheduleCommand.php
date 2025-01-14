@@ -8,6 +8,7 @@ use App\Services\Scraping\BatchRaceScheduleService;
 /***
     実行コマンド
     php artisan app:batch-race-schedule-command
+    （docker exec -it keiba_simulation_app php artisan app:batch-race-schedule-command）
 ***/
 
 class BatchRaceScheduleCommand extends Command
