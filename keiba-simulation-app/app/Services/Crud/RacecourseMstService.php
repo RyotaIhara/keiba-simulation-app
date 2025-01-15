@@ -29,8 +29,7 @@ class RacecourseMstService extends CrudBase
     {
         $racecourseMst = new RacecourseMst();
 
-        $racecourseMst->setJyoCd(isset($data['jyo_cd']) ? $data['jyo_cd'] : $data['jyoCd']);
-        $racecourseMst->setRacecourseName(isset($data['racecourse_name']) ? $data['racecourse_name'] : $data['racecourseName']);
+        $racecourseMst = $this->setRacecourseMst($racecourseMst, $data);
 
         $this->entityManager->persist($racecourseMst);
         $this->entityManager->flush();
@@ -43,8 +42,7 @@ class RacecourseMstService extends CrudBase
         $racecourseMstRepository = $this->entityManager->getRepository(RacecourseMst::class);
         $racecourseMst = $racecourseMstRepository->find($id);
 
-        $racecourseMst->setJyoCd(isset($data['jyo_cd']) ? $data['jyo_cd'] : $data['jyoCd']);
-        $racecourseMst->setRacecourseName(isset($data['racecourse_name']) ? $data['racecourse_name'] : $data['racecourseName']);
+        $racecourseMst = $this->setRacecourseMst($racecourseMst, $data);
 
         $this->entityManager->persist($racecourseMst);
         $this->entityManager->flush();
@@ -60,6 +58,15 @@ class RacecourseMstService extends CrudBase
             $this->entityManager->remove($racecourseMst);
             $this->entityManager->flush();
         }
+    }
+
+    /** createやupdate用にデータをセットする **/
+    private function setRacecourseMst($racecourseMst, $data)
+    {
+        $racecourseMst->setJyoCd($this->getValue($data, 'jyo_cd', 'jyoCd'));
+        $racecourseMst->setRacecourseName($this->getValue($data, 'racecourse_name', 'racecourseName'));
+
+        return $racecourseMst;
     }
 
 }

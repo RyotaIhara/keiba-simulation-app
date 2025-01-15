@@ -54,8 +54,8 @@ class BatchRefundAmountService extends ScrapingBase
                     $result['tan3Result'] = $this->formatRefundAmountData($trNode);
                 });
             });
-        } catch ( \Exception $ex ) {
-            echo "データの取得に失敗しました\n" . $ex;
+        } catch ( \Exception $e ) {
+            echo "データの取得に失敗しました\n" . $e;
 
             return [];
         }

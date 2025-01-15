@@ -14,4 +14,9 @@ class CrudBase extends Base
         $this->entityManager = $entityManager;
     }
 
+    function getValue(array $data, string $snakeKey, string $camelKey)
+    {
+        return $data[$snakeKey] ?? $data[$camelKey] ?? null;
+    }
+
 }

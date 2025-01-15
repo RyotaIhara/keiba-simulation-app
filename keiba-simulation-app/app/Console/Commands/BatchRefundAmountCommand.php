@@ -38,8 +38,11 @@ class BatchRefundAmountCommand extends Command
         $raceId = '202544011506';
         $refundAmountResult = $batchRefundAmountService->getLocalRaceRefundAmountByNetkeiba($raceId);
 
-        var_dump($refundAmountResult);
-
-        $this->info('バッチ処理が完了しました！');
+        if (!empty($refundAmountResult)) {
+            var_dump($refundAmountResult);
+            $this->info('バッチ処理が成功しました！');
+        } else {
+            $this->info('データの取得に失敗しました');
+        }
     }
 }

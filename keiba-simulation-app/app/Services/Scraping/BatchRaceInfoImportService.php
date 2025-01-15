@@ -1,0 +1,149 @@
+<?php
+
+namespace App\Services\Scraping;
+
+use App\Services\Scraping\ScrapingBase;
+use App\Services\Crud\RaceInfoService;
+use App\Services\Crud\RaceCardService;
+
+require 'vendor/autoload.php';
+
+class BatchRaceInfoImportService extends ScrapingBase
+{
+    /** Netkeibaのサイトから地方競馬のレース情報を取得する **/
+    public function getLocalRaceInfoByNetkeiba($raceId) {
+        $scrapingUrl = self::$NETKEIBA_LOCAL_RACE_DOMAIN_URL . 'race/shutuba.html?race_id=' . $raceId;
+
+        $crawler = $this->getCrawler($scrapingUrl);
+
+        $raceInfo = array();
+        try {
+            $raceName = $crawler->filter('div.RaceName')->text('');
+            $raceInfo['race_name'] =trim(preg_replace('/\s+/', ' ', $raceName));
+
+            // レースそのものの情報を取得
+            $crawler->filter('div.RaceData01')->each(function ($node) use (&$raceInfo) {
+                $timeText = $node->text();
+
+                $distance = $node->filter('span')->eq(0)->text();
+
+                if (preg_match('/^(ダ|芝|障)(\d+m)$/', $distance, $matches)) {
+                    $raceInfo['course_type'] = $matches[1];
+                    $raceInfo['distance'] = $distance = $matches[2];
+                    if (preg_match('/^(\d+)m$/', trim($distance), $matches2)) {
+                        $raceInfo['distance'] = intval($distance);
+                    }
+                } else {
+                    echo "データが正しく解析できませんでした。(1)\n";
+                }
+
+                // コース
+                preg_match('/\((右|左|直)\)/', $timeText, $courseMatch);
+                $raceInfo['rotation'] = str_replace(['(', ')'], '', $courseMatch[0])?? '';;
+
+                // 天候
+                preg_match('/天候:([^\s<]+)/', $timeText, $weatherMatch);
+                $raceInfo['weather'] = $weatherMatch[1] ?? '';
+            
+                // 馬場状態
+                $trackCondition = $node->filter('span.Item04')->text();
+                $raceInfo['baba_state'] = str_replace('/ 馬場:', '', trim($trackCondition));
+            });
+
+
+            // 出走馬情報を取得
+            $crawler->filter('tr.HorseList')->each(function ($parentRow) use (&$horceInfoList) {
+                $wakuBan = $parentRow->filter('td[class^="Waku"]')->text('');
+                $umaBan = $parentRow->filter('td[class^="Umaban"]')->text('');
+                $horseName = $parentRow->filter('td.HorseInfo span.HorseName a')->text('');
+                $age = $parentRow->filter('td')->eq(1)->text('');
+                $jockey = $parentRow->filter('td.Jockey a')->text('');
+                $stable = $parentRow->filter('td.Trainer')->text('');
+
+                $weight = NULL;
+                $weightGainLoss = NULL;
+                $favourite = NULL;
+                $winOdds = NULL;
+
+                $isCancel = False;
+                if ($parentRow->filter('td.Cancel_Txt')->count() > 0) {
+                    $isCancel = True;
+                } else {
+                    $weightInfoOrigin = $parentRow->filter('td.Weight')->text('');
+                    if (preg_match('/^(\d+)\(([^)]+)\)$/', $weightInfoOrigin, $matches)) {
+                        $weight = $matches[1];
+                        $weightGainLoss = $matches[2];
+                        $favourite = $parentRow->filter('td.Popular.Txt_C')->text('');
+                        $winOdds = $parentRow->filter('td.Popular.Txt_R')->text('');
+                    } else {
+                        echo "データが正しく解析できませんでした。(2)\n";
+                    }
+                }
+
+                $horceInfoList[] = [
+                    'waku_ban' => $wakuBan,
+                    'uma_ban' => $umaBan,
+                    'horse_name' => $horseName,
+                    'age' => $age,
+                    'weight' => $weight,
+                    'jockey_name' => $jockey,
+                    'favourite' => $favourite,
+                    'win_odds' => $winOdds,
+                    'stable' => $stable,
+                    'weight_gain_loss' => $weightGainLoss,
+                    'is_cancel' => $isCancel
+                ];
+            });
+        } catch (\Exception $e) {
+            echo "データの取得に失敗しました\n" . $e;
+
+            return [];
+        }
+
+        $results = array(
+            'raceInfo' => $raceInfo,
+            'horceInfoList' => $horceInfoList,
+        );
+
+        return $results;
+    }
+
+    /** Netkeibaのサイトから中央競馬のレース情報を取得する **/
+    public function getCentralRaceInfoByNetkeiba() {
+        //
+    }
+
+    public function insertRaceInfoCard($raceInfoData, $raceInfoCheckParams) {
+        $result = True;
+
+        try {
+            $raceInfoService = app(RaceInfoService::class);
+            $raceCardService = app(RaceCardService::class);
+    
+            $raceInfoArray = $raceInfoData['raceInfo'];
+            $raceInfoArray['race_date'] = $raceInfoCheckParams['raceDate'];
+            $raceInfoArray['jyo_cd'] = $raceInfoCheckParams['jyoCd'];
+            $raceInfoArray['race_num'] = $raceInfoCheckParams['raceNum'];
+            $raceInfoArray['entry_horce_count'] = count($raceInfoData['horceInfoList']);
+    
+            $raceInfo = $raceInfoService->getRaceInfoByUniqueColumn($raceInfoCheckParams);
+            if (empty($raceInfo)) {
+                $raceInfoService->createRaceInfo($raceInfoArray);
+                $raceInfo = $raceInfoService->getRaceInfoByUniqueColumn($raceInfoCheckParams);
+            }
+    
+            foreach ($raceInfoData['horceInfoList'] as $horseInfo) {
+                $horseInfo['race_info_id'] = $raceInfo->getId();
+                $raceCardService->createRaceCard($horseInfo);
+            }
+
+        } catch (\Exception $e) {
+            echo "データの作成に失敗しました\n" . $e;
+
+            return $result = False;
+        }
+
+        return $result;
+    }
+
+}
