@@ -113,6 +113,7 @@ class BatchRaceInfoImportService extends ScrapingBase
         //
     }
 
+    /** race_infoとrace_cardにデータをインサートする **/
     public function insertRaceInfoCard($raceInfoData, $raceInfoCheckParams) {
         $result = True;
 
@@ -144,6 +145,29 @@ class BatchRaceInfoImportService extends ScrapingBase
         }
 
         return $result;
+    }
+
+    /** レース数を取得するメソッド **/
+    function getCountOfRaces($raceId) 
+    {
+        $results = array();
+
+        $scrapingUrl = self::$NETKEIBA_LOCAL_RACE_DOMAIN_URL . 'race/shutuba.html?race_id=' . $raceId;
+        $crawler = $this->getCrawler($scrapingUrl);
+
+        try {
+            $crawler->filter('div.RaceNumWrap ul.fc li')->each(function ($node) use (&$results) {
+                $link = $node->filter('a');
+                if ($link->count() > 0) {
+                    $results[] = trim($link->text());
+                }
+            });
+        } catch (\Exception $ex) {
+            echo 'レース数がうまく取得できませんでした' .  $ex->getMessage() . "\n";
+        }
+
+        return count($results);
+
     }
 
 }
