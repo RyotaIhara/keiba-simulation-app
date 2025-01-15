@@ -34,11 +34,11 @@ class BatchRaceScheduleCommand extends Command
      */
     public function handle()
     {
-        $this->info('バッチ処理が完了しました！');
-
-        $year = '2025';
-        $month = '01';
+        $year = date('Y');
+        $month = date('m');
         $batchRaceScheduleService = app(BatchRaceScheduleService::class);
         $batchRaceScheduleService->getLocalRaceCalendarInfoByNetkeiba($year, $month);
+
+        $this->info('バッチ処理が完了しました！');
     }
 }
