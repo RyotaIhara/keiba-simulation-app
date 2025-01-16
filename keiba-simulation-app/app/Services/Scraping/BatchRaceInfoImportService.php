@@ -6,8 +6,6 @@ use App\Services\Scraping\ScrapingBase;
 use App\Services\Crud\RaceInfoService;
 use App\Services\Crud\RaceCardService;
 
-require 'vendor/autoload.php';
-
 class BatchRaceInfoImportService extends ScrapingBase
 {
     /** Netkeibaのサイトから地方競馬のレース情報を取得する **/
@@ -115,8 +113,6 @@ class BatchRaceInfoImportService extends ScrapingBase
 
     /** race_infoとrace_cardにデータをインサートする **/
     public function insertRaceInfoCard($raceInfoData, $raceInfoCheckParams) {
-        $result = True;
-
         try {
             $raceInfoService = app(RaceInfoService::class);
             $raceCardService = app(RaceCardService::class);
@@ -141,10 +137,10 @@ class BatchRaceInfoImportService extends ScrapingBase
         } catch (\Exception $e) {
             echo "データの作成に失敗しました\n" . $e;
 
-            return $result = False;
+            return False;
         }
 
-        return $result;
+        return True;
     }
 
     /** レース数を取得するメソッド **/

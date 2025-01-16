@@ -3,6 +3,7 @@
 namespace App\Services\Scraping;
 
 use App\Services\Scraping\ScrapingBase;
+use App\Services\Crud\RaceInfoService;
 
 require 'vendor/autoload.php';
 
@@ -68,8 +69,34 @@ class BatchRefundAmountService extends ScrapingBase
         //
     }
 
+    /** race_refund_amountにデータをインサートする **/
+    public function insertRaceRefundAmount($refundAmountResult, $raceInfoCheckParams) {
+        try {
+            $raceInfoService = app(RaceInfoService::class);
+            //$raceRefundAmountService = app(RaceRefundAmountService::class);
+    
+            $raceInfo = $raceInfoService->getRaceInfoByUniqueColumn($raceInfoCheckParams);
+            if (empty($raceInfo)) {
+                echo "race_infoにデータが存在しません";
+                return False; 
+            }
+
+            foreach ($refundAmountResult as $item) {
+                $createParamsForRaceRefundAmount = [];
+                //$raceRefundAmountService->createRaceRefundAmount($createParamsForRaceRefundAmount);
+            }
+
+        } catch (\Exception $e) {
+            echo "データの作成に失敗しました\n" . $e;
+
+            return False;
+        }
+
+        return True;
+    }
+
     /** 払戻金データを整形する **/
-    function formatRefundAmountData($trNode) {
+    protected function formatRefundAmountData($trNode) {
         $ulNode = $trNode->filter('ul');
         $result = [];
         if (empty($ulNode->text(''))) {

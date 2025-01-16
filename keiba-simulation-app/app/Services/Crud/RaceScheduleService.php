@@ -6,8 +6,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entities\RaceSchedule;
 use App\Services\Crud\CrudBase;
 
-require 'vendor/autoload.php';
-
 class RaceScheduleService extends CrudBase
 {
     public function __construct(EntityManagerInterface $entityManager)

@@ -7,8 +7,6 @@ use App\Services\Crud\RaceScheduleService;
 use App\Services\Crud\RacecourseMstService;
 use DateTime;
 
-require 'vendor/autoload.php';
-
 class BatchRaceScheduleService extends ScrapingBase
 {
     /** Netkeibaのサイトから地方競馬のカレンダー情報を取得する **/

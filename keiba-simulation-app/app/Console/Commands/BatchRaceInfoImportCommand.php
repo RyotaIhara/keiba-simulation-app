@@ -24,9 +24,9 @@ class BatchRaceInfoImportCommand extends Command
      */
     //protected $signature = 'app:batch-race-info-import-command';
     protected $signature = 'app:batch-race-info-import-command 
-                        {--fromRaceDate= : 開始日付} 
-                        {--toRaceDate= : 終了日付}
-                        {--raceId= : レースID}';
+                            {--fromRaceDate= : 開始日付} 
+                            {--toRaceDate= : 終了日付}
+                            {--raceId= : レースID}';
 
     /**
      * The console command description.
@@ -50,7 +50,7 @@ class BatchRaceInfoImportCommand extends Command
         $optionRaceId = $this->option('raceId') ?: NULL;
 
         if (!(is_null($fromRaceDate) && is_null($toRaceDate)) || !is_null($optionRaceId)) {
-            //
+            //この場合はうまくいくので処理続行
         } else {
             echo '「fromRaceDate、toRaceDate」もしくは「raceId」のどちらかを指定してください';
             return 0;
@@ -114,9 +114,6 @@ class BatchRaceInfoImportCommand extends Command
                     $raceId = $year . $jyoCd . $month . $day . str_pad($raceNum, 2, '0', STR_PAD_LEFT);
 
                     $raceInfoData = $batchRaceInfoImportService->getLocalRaceInfoByNetkeiba($raceId);
-
-                    echo $raceId . "\n";
-                    continue;
 
                     if (!empty($raceInfoData)) {
                         $raceInfoCheckParams = [

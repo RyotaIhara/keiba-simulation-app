@@ -6,8 +6,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entities\RaceInfo;
 use App\Services\Crud\CrudBase;
 
-require 'vendor/autoload.php';
-
 class RaceInfoService extends CrudBase
 {
     public function __construct(EntityManagerInterface $entityManager)
