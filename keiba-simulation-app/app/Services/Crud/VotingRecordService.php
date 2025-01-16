@@ -16,7 +16,7 @@ class VotingRecordService extends CrudBase
     /** voting_recordテーブルのデータ一覧を取得する **/
     public function getAllVotingRecords()
     {
-        return $this->entityManager->getRepository(VotingRecord::class)->findAll();
+        return $this->entityManager->getRepository(VotingRecord::class)->getAllRacecourseMsts();
     }
 
     /** IDからvoting_recordテーブルのデータを取得する **/

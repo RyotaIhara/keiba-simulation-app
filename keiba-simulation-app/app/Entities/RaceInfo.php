@@ -16,8 +16,8 @@ class RaceInfo
     #[ORM\Column(type: "date", name: "race_date", nullable: true)]
     private ?\DateTime $raceDate = null;
 
-    #[ORM\Column(type: "integer", name: "jyo_cd", nullable: true)]
-    private ?int $jyoCd = null;
+    #[ORM\Column(type: "string", name: "jyo_cd", nullable: true)]
+    private ?string $jyoCd = null;
 
     #[ORM\Column(type: "integer", name: "race_num", nullable: true)]
     private ?int $raceNum = null;
@@ -43,6 +43,9 @@ class RaceInfo
     #[ORM\Column(type: "string", length: 11, name: "baba_state", nullable: true)]
     private ?string $babaState = null;
 
+    // サイト表示用のカラム
+    private ?string $racecourseName = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -58,12 +61,12 @@ class RaceInfo
         $this->raceDate = $raceDate;
     }
 
-    public function getJyoCd(): ?int
+    public function getJyoCd(): ?string
     {
         return $this->jyoCd;
     }
 
-    public function setJyoCd(?int $jyoCd): void
+    public function setJyoCd(?string $jyoCd): void
     {
         $this->jyoCd = $jyoCd;
     }
@@ -146,5 +149,16 @@ class RaceInfo
     public function setBabaState(?string $babaState): void
     {
         $this->babaState = $babaState;
+    }
+
+    public function getRacecourseName(): ?string
+    {
+        //return $this->racecourseName;
+        return '大井競馬場';
+    }
+
+    public function setRacecourseName(?string $racecourseName): void
+    {
+        $this->racecourseName = $racecourseName;
     }
 }

@@ -13,8 +13,9 @@ class RaceCard
     #[ORM\Column(type: "integer")]
     private int $id;
 
-    #[ORM\Column(type: "integer", name: "race_info_id")]
-    private int $raceInfoId;
+    #[ORM\ManyToOne(targetEntity: "App\Entities\RaceInfo")]
+    #[ORM\JoinColumn(name: "race_info_id", referencedColumnName: "id", nullable: false)]
+    private RaceInfo $raceInfo;
 
     #[ORM\Column(type: "integer", name: "waku_ban", nullable: true)]
     private ?int $wakuBan = null;
@@ -54,14 +55,14 @@ class RaceCard
         return $this->id;
     }
 
-    public function getRaceInfoId(): int
+    public function getRaceInfo(): RaceInfo
     {
-        return $this->raceInfoId;
+        return $this->raceInfo;
     }
 
-    public function setRaceInfoId(int $raceInfoId): void
+    public function setRaceInfo(RaceInfo $raceInfo): void
     {
-        $this->raceInfoId = $raceInfoId;
+        $this->raceInfo = $raceInfo;
     }
 
     public function getWakuBan(): ?int

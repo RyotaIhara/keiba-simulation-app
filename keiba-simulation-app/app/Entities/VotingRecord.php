@@ -13,11 +13,13 @@ class VotingRecord
     #[ORM\Column(type: "integer")]
     private int $id;
 
-    #[ORM\Column(type: "integer", name: "race_info_id")]
-    private int $raceInfoId;
+    #[ORM\ManyToOne(targetEntity: "App\Entities\RaceInfo")]
+    #[ORM\JoinColumn(name: "race_info_id", referencedColumnName: "id", nullable: false)]
+    private RaceInfo $raceInfo;
 
-    #[ORM\Column(type: "integer", name: "how_to_buy_mst_id")]
-    private int $howToBuyMstId;
+    #[ORM\ManyToOne(targetEntity: "App\Entities\HowToBuyMst")]
+    #[ORM\JoinColumn(name: "how_to_buy_mst_id", referencedColumnName: "id", nullable: false)]
+    private HowToBuyMst $howToBuyMst;
 
     #[ORM\Column(type: "string", length: 11, name: "voting_uma_ban")]
     private string $votingUmaBan;
@@ -37,24 +39,24 @@ class VotingRecord
         return $this->id;
     }
 
-    public function getRaceInfoId(): int
+    public function getRaceInfo(): RaceInfo 
     {
-        return $this->raceInfoId;
+        return $this->raceInfo;
     }
 
-    public function setRaceInfoId(int $raceInfoId): void
+    public function setRaceInfo(RaceInfo  $raceInfo): void
     {
-        $this->raceInfoId = $raceInfoId;
+        $this->raceInfo = $raceInfo;
     }
 
-    public function getHowToBuyMstId(): int
+    public function getHowToBuyMst(): HowToBuyMst
     {
-        return $this->howToBuyMstId;
+        return $this->howToBuyMst;
     }
 
-    public function setHowToBuyMstId(int $howToBuyMstId): void
+    public function setHowToBuyMst(int $howToBuyMst): void
     {
-        $this->howToBuyMstId = $howToBuyMstId;
+        $this->howToBuyMst = $howToBuyMst;
     }
 
     public function getVotingUmaBan(): string
