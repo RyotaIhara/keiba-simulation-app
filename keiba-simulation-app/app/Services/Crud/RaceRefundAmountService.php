@@ -5,6 +5,7 @@ namespace App\Services\Crud;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entities\RaceRefundAmount;
 use App\Services\Crud\CrudBase;
+use App\Services\Crud\RaceInfoService;
 
 class RaceRefundAmountService extends CrudBase
 {
@@ -69,7 +70,10 @@ class RaceRefundAmountService extends CrudBase
     /** createやupdate用にデータをセットする **/
     private function setRaceRefundAmount($raceRefundAmount, $data)
     {
-        $raceRefundAmount->setRaceInfoId($this->getValue($data, 'race_info_id', 'raceInfoId'));
+        $raceInfoService = app(RaceInfoService::class);
+        $raceInfo = $raceInfoService->getRaceInfo($this->getValue($data, 'race_info_id', 'raceInfoId'));
+
+        $raceRefundAmount->setRaceInfo($raceInfo);
         $raceRefundAmount->setHowToBuyMstId($this->getValue($data, 'how_to_buy_mst_id', 'howToBuyMstId'));
         $raceRefundAmount->setResultUmaBan($this->getValue($data, 'result_uma_ban', 'resultUmaBan '));
         $raceRefundAmount->setRefundAmount($this->getValue($data, 'refund_amount', 'refundAmount'));

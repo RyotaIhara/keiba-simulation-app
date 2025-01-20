@@ -43,9 +43,6 @@ class RaceInfo
     #[ORM\Column(type: "string", length: 11, name: "baba_state", nullable: true)]
     private ?string $babaState = null;
 
-    // サイト表示用のカラム
-    private ?string $racecourseName = null;
-
     public function getId(): int
     {
         return $this->id;
@@ -151,14 +148,4 @@ class RaceInfo
         $this->babaState = $babaState;
     }
 
-    public function getRacecourseName(): ?string
-    {
-        //return $this->racecourseName;
-        return '大井競馬場';
-    }
-
-    public function setRacecourseName(?string $racecourseName): void
-    {
-        $this->racecourseName = $racecourseName;
-    }
 }

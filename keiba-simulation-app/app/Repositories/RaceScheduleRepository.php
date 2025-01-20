@@ -17,4 +17,21 @@ class RaceScheduleRepository extends EntityRepository
         ->getQuery()
         ->getResult();
     }
+
+    public function getRaceSchedulesWithCourseMst($whereParams): array
+    {
+        $sql = "
+            SELECT 
+                rs.*, rcm.id AS racecourse_mst_id, rcm.racecourse_name
+            FROM race_schedule rs
+            INNER JOIN racecourse_mst rcm ON rcm.jyo_cd = rs.jyo_cd
+            WHERE rs.race_date = :race_date
+        ";
+
+        $connection = $this->getEntityManager()->getConnection();
+        $result = $connection->executeQuery($sql, ['race_date' => $whereParams['race_date']]);
+
+        return $result->fetchAllAssociative();
+    }
+
 }

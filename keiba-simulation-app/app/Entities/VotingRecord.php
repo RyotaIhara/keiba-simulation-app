@@ -8,6 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: "voting_record")]
 class VotingRecord
 {
+    const DEFALT_REFUND_AMOUNT = 0;
+    const DEFALT_HIT_STATUS = 0;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
@@ -28,11 +31,17 @@ class VotingRecord
     private int $votingAmount;
 
     #[ORM\Column(type: "integer", name: "refund_amount")]
-    private int $refundAmount;
+    private int $refundAmount = self::DEFALT_REFUND_AMOUNT;
 
     /** （0：未確定、1：的中、2：外れ） **/
     #[ORM\Column(type: "integer", name: "hit_status")]
-    private int $hitStatus;
+    private int $hitStatus = self::DEFALT_HIT_STATUS;
+
+    #[ORM\Column(type: "datetime", name: "created_at", nullable: true)]
+    private ?\DateTime $createdAt;
+
+    #[ORM\Column(type: "datetime", name: "updated_at", nullable: true)]
+    private ?\DateTime $updatedAt;
 
     public function getId(): int
     {
@@ -54,7 +63,7 @@ class VotingRecord
         return $this->howToBuyMst;
     }
 
-    public function setHowToBuyMst(int $howToBuyMst): void
+    public function setHowToBuyMst(HowToBuyMst $howToBuyMst): void
     {
         $this->howToBuyMst = $howToBuyMst;
     }
@@ -97,5 +106,25 @@ class VotingRecord
     public function setHitStatus(int $hitStatus): void
     {
         $this->hitStatus = $hitStatus;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTime $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTime $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
     }
 }

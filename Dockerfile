@@ -30,5 +30,12 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
 # Composerを使ってLaravelの依存関係をインストール
 RUN composer install
 
+# Laravelのキャッシュクリア＋キャッシュ作成
+RUN php artisan cache:clear
+RUN php artisan config:clear
+RUN php artisan view:clear
+RUN php artisan route:clear
+RUN php artisan view:cache
+
 # コンテナのポートを開放
 EXPOSE 9000

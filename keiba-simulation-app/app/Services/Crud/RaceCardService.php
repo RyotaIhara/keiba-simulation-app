@@ -5,6 +5,7 @@ namespace App\Services\Crud;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entities\RaceCard;
 use App\Services\Crud\CrudBase;
+use App\Services\Crud\RaceInfoService;
 
 class RaceCardService extends CrudBase
 {
@@ -69,7 +70,10 @@ class RaceCardService extends CrudBase
     /** createやupdate用にデータをセットする **/
     private function setRaceCard($raceCard, $data)
     {
-        $raceCard->setRaceInfoId($this->getValue($data, 'race_info_id', 'raceInfoId'));
+        $raceInfoService = app(RaceInfoService::class);
+        $raceInfo = $raceInfoService->getRaceInfo($this->getValue($data, 'race_info_id', 'raceInfoId'));
+
+        $raceCard->setRaceInfo($raceInfo);
         $raceCard->setWakuBan($this->getValue($data, 'waku_ban', 'wakuBan'));
         $raceCard->setUmaBan($this->getValue($data, 'uma_ban', 'umaBan'));
         $raceCard->setHorseName($this->getValue($data, 'horse_name', 'horseName'));

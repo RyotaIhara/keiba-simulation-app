@@ -5,6 +5,8 @@ namespace App\Services\Crud;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entities\VotingRecord;
 use App\Services\Crud\CrudBase;
+use App\Services\Crud\RaceInfoService;
+use App\Services\Crud\HowToBuyMstService;
 
 class VotingRecordService extends CrudBase
 {
@@ -69,11 +71,23 @@ class VotingRecordService extends CrudBase
     /** createやupdate用にデータをセットする **/
     private function setVotingRecord($votingRecord, $data)
     {
-        $votingRecord->setRaceInfoId($this->getValue($data, 'race_info_id', 'raceInfoId'));
-        $votingRecord->setHowToBuyMstId($this->getValue($data, 'how_to_buy_mst_id', 'howToBuyMstId'));
-        $votingRecord->setVotingUmaBan($this->getValue($data, 'voting_uma_ban ', 'votingUmaBan '));
+        $raceInfoService = app(RaceInfoService::class);
+        $raceInfo = $raceInfoService->getRaceInfo($this->getValue($data, 'race_info_id', 'raceInfoId'));
+
+        $howToBuyMstService = app(HowToBuyMstService::class);
+        $howToBuyMst = $howToBuyMstService->getHowToBuyMst($this->getValue($data, 'how_to_buy_mst_id', 'howToBuyMstId'));
+
+        $votingRecord->setRaceInfo($raceInfo);
+        $votingRecord->setHowToBuyMst($howToBuyMst);
+        $votingRecord->setVotingUmaBan($this->getValue($data, 'voting_uma_ban', 'votingUmaBan'));
         $votingRecord->setVotingAmount($this->getValue($data, 'voting_amount', 'votingAmount'));
         $votingRecord->setRefundAmount($this->getValue($data, 'refund_amount', 'refundAmount'));
+        if (!empty($this->getValue($data, 'created_at', 'createdAt'))) {
+            $votingRecord->setCreatedAt($this->getValue($data, 'created_at', 'createdAt'));
+        }
+        if (!empty($this->getValue($data, 'updated_at', 'updatedAt'))) {
+            $votingRecord->setUpdatedAt($this->getValue($data, 'updated_at', 'updatedAt'));
+        }
 
         return $votingRecord;
     }

@@ -17,6 +17,10 @@ class RaceScheduleService extends CrudBase
     public function getAllRaceSchedules()
     {
         return $this->entityManager->getRepository(RaceSchedule::class)->findAll();
+
+    /** レース場付きでrace_scheduleテーブルのデータ一覧を取得する **/    }
+    public function getRaceSchedulesWithCourseMst($whereParams) {
+        return $this->entityManager->getRepository(RaceSchedule::class)->getRaceSchedulesWithCourseMst($whereParams);
     }
 
     /** IDからrace_scheduleテーブルのデータを取得する **/

@@ -31,7 +31,6 @@ class RaceInfo extends \App\Entities\RaceInfo implements \Doctrine\ORM\Proxy\Int
         "\0".parent::class."\0".'raceDate' => [parent::class, 'raceDate', null],
         "\0".parent::class."\0".'raceName' => [parent::class, 'raceName', null],
         "\0".parent::class."\0".'raceNum' => [parent::class, 'raceNum', null],
-        "\0".parent::class."\0".'racecourseName' => [parent::class, 'racecourseName', null],
         "\0".parent::class."\0".'rotation' => [parent::class, 'rotation', null],
         "\0".parent::class."\0".'weather' => [parent::class, 'weather', null],
         'babaState' => [parent::class, 'babaState', null],
@@ -43,7 +42,6 @@ class RaceInfo extends \App\Entities\RaceInfo implements \Doctrine\ORM\Proxy\Int
         'raceDate' => [parent::class, 'raceDate', null],
         'raceName' => [parent::class, 'raceName', null],
         'raceNum' => [parent::class, 'raceNum', null],
-        'racecourseName' => [parent::class, 'racecourseName', null],
         'rotation' => [parent::class, 'rotation', null],
         'weather' => [parent::class, 'weather', null],
     ];
