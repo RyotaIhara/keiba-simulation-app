@@ -122,18 +122,24 @@ class BatchRaceInfoImportService extends ScrapingBase
             $raceInfoArray['jyo_cd'] = $raceInfoCheckParams['jyoCd'];
             $raceInfoArray['race_num'] = $raceInfoCheckParams['raceNum'];
             $raceInfoArray['entry_horce_count'] = count($raceInfoData['horceInfoList']);
-    
+
             $raceInfo = $raceInfoService->getRaceInfoByUniqueColumn($raceInfoCheckParams);
             if (empty($raceInfo)) {
                 $raceInfoService->createRaceInfo($raceInfoArray);
                 $raceInfo = $raceInfoService->getRaceInfoByUniqueColumn($raceInfoCheckParams);
             }
-    
-            foreach ($raceInfoData['horceInfoList'] as $horseInfo) {
-                $horseInfo['race_info_id'] = $raceInfo->getId();
-                $raceCardService->createRaceCard($horseInfo);
-            }
 
+            foreach ($raceInfoData['horceInfoList'] as $horseInfo) {
+                $raceCardCheckParams = array(
+                    'raceInfo' => $raceInfo,
+                    'umaBan' => $horseInfo['uma_ban'],
+                );
+                $raceCard = $raceCardService->getRaceCardByUniqueColumn($raceCardCheckParams);
+                if (empty($raceCard)) {
+                    $horseInfo['race_info_id'] = $raceInfo->getId();
+                    $raceCardService->createRaceCard($horseInfo);
+                }
+            }
         } catch (\Exception $e) {
             echo "データの作成に失敗しました\n" . $e;
 

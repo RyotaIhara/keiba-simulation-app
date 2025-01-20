@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entities\RaceRefundAmount;
 use App\Services\Crud\CrudBase;
 use App\Services\Crud\RaceInfoService;
+use App\Services\Crud\HowToBuyMstService;
 
 class RaceRefundAmountService extends CrudBase
 {
@@ -73,8 +74,12 @@ class RaceRefundAmountService extends CrudBase
         $raceInfoService = app(RaceInfoService::class);
         $raceInfo = $raceInfoService->getRaceInfo($this->getValue($data, 'race_info_id', 'raceInfoId'));
 
+        $howToBuyMstService = app(HowToBuyMstService::class);
+        $howToBuyMst = $howToBuyMstService->getHowToBuyMst($this->getValue($data, 'how_to_buy_mst_id', 'howToBuyMstId'));
+
         $raceRefundAmount->setRaceInfo($raceInfo);
-        $raceRefundAmount->setHowToBuyMstId($this->getValue($data, 'how_to_buy_mst_id', 'howToBuyMstId'));
+        $raceRefundAmount->setHowToBuyMst($howToBuyMst);
+        $raceRefundAmount->setPattern($data['pattern']);
         $raceRefundAmount->setResultUmaBan($this->getValue($data, 'result_uma_ban', 'resultUmaBan '));
         $raceRefundAmount->setRefundAmount($this->getValue($data, 'refund_amount', 'refundAmount'));
         return $raceRefundAmount;

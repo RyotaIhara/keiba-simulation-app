@@ -17,8 +17,12 @@ class RaceRefundAmount
     #[ORM\JoinColumn(name: "race_info_id", referencedColumnName: "id", nullable: false)]
     private RaceInfo $raceInfo;
 
-    #[ORM\Column(type: "integer", name: "how_to_buy_mst_id")]
-    private int $howToBuyMstId;
+    #[ORM\ManyToOne(targetEntity: "App\Entities\HowToBuyMst")]
+    #[ORM\JoinColumn(name: "how_to_buy_mst_id", referencedColumnName: "id", nullable: false)]
+    private HowToBuyMst $howToBuyMst;
+
+    #[ORM\Column(type: "integer", length: 4, name: "pattern")]
+    private int $pattern;
 
     #[ORM\Column(type: "string", length: 11, name: "result_uma_ban")]
     private string $resultUmaBan;
@@ -41,15 +45,26 @@ class RaceRefundAmount
         $this->raceInfo = $raceInfo;
     }
 
-    public function getHowToBuyMstId(): int
+    public function getHowToBuyMst(): HowToBuyMst
     {
-        return $this->howToBuyMstId;
+        return $this->howToBuyMst;
     }
 
-    public function setHowToBuyMstId(int $howToBuyMstId): void
+    public function setHowToBuyMst(HowToBuyMst $howToBuyMst): void
     {
-        $this->howToBuyMstId = $howToBuyMstId;
+        $this->howToBuyMst = $howToBuyMst;
     }
+
+    public function getPattern(): int
+    {
+        return $this->pattern;
+    }
+
+    public function setPattern(int $pattern): void
+    {
+        $this->pattern = $pattern;
+    }
+
 
     public function getResultUmaBan(): string
     {

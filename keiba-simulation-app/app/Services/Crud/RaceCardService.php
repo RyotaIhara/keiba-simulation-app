@@ -83,7 +83,9 @@ class RaceCardService extends CrudBase
         $raceCard->setFavourite($this->getValue($data, 'favourite', 'favourite'));
         $raceCard->setWinOdds($this->getValue($data, 'win_odds', 'winOdds'));
         $raceCard->setStable($this->getValue($data, 'stable', 'stable'));
-        $raceCard->setWeightGainLoss($this->getValue($data, 'weight_gain_loss', 'weightGainLoss'));
+        if (is_numeric($this->getValue($data, 'weight_gain_loss', 'weightGainLoss'))) {
+            $raceCard->setWeightGainLoss($this->getValue($data, 'weight_gain_loss', 'weightGainLoss'));
+        } 
         $raceCard->setIsCancel($this->getValue($data, 'is_cancel', 'isCancel'));
 
         return $raceCard;

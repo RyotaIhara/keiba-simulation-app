@@ -68,7 +68,15 @@ class BatchRefundAmountCommand extends Command
                 $day = substr($optionRaceId, 8, 2);
                 $raceNum = substr($optionRaceId, 10, 2);
 
-                //
+                $refundAmountResult = $batchRefundAmountService->getLocalRaceRefundAmountByNetkeiba($optionRaceId);
+
+                $raceInfoCheckParams = [
+                    'raceDate' => new \DateTime($year . '-' . $month . '-' . $day),
+                    'jyoCd' => $jyoCd,
+                    'raceNum' => $raceNum,
+                ];
+
+                $batchRefundAmountService->insertRaceRefundAmount($refundAmountResult, $raceInfoCheckParams);
 
                 return 1;
             } catch (\Exception $ex) {

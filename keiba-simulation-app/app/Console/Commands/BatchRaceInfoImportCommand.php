@@ -124,7 +124,7 @@ class BatchRaceInfoImportCommand extends Command
 
                         $batchRaceInfoImportService->insertRaceInfoCard($raceInfoData, $raceInfoCheckParams);
 
-                        $this->info('バッチ処理が成功しました！');
+                        $this->info($year . '-' . $month . '-' . $day . ', race_num:' . $raceNum . ', jyo_cd:' . $jyoCd);
 
                     } else {
                         $this->info('データの取得に失敗しました');
@@ -133,8 +133,8 @@ class BatchRaceInfoImportCommand extends Command
             } catch (\Exception $ex) {
                 echo 'BatchRaceInfoImportCommandの実行に失敗しました';
             }
-
         }
+        $this->info('バッチ処理が成功しました！');
 
     }
 }
