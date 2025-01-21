@@ -4,44 +4,7 @@
     <h1>投票</h1>
     <form action="{{ route('voting_record.store') }}" method="POST">
         @csrf
-        
-        <div class="formssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss-group">
-            <label for="race_schedule">レース場を選択</label>
-            <select name="racecourse_mst" id="racecourse_mst" class="form-control" required>
-                @foreach ($raceSchedulesWithCourseDatas as $data)
-                    <option value="{{ $data['jyo_cd'] }}">{{ $data['racecourse_name'] }} ({{ $data['race_date'] }})</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="race_num">レース番号を選択</label>
-            <select name="race_num" id="race_num" class="form-control" required>
-                @foreach ($raceNumDatas as $raceNumData)
-                    <option value="{{ $raceNumData }}">{{ $raceNumData }}R</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="how_to_buy">買い方を選択</label>
-            <select name="how_to_buy" id="how_to_buy" class="form-control" required>
-                @foreach ($howToBuyMstDatas as $howToBuyMstData)
-                    <option value="{{ $howToBuyMstData->getId() }}">{{ $howToBuyMstData->getHowToBuyName() }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="voting_uma_ban">買い目</label>
-            <input type="text" name="voting_uma_ban" id="voting_uma_ban" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label for="voting_amount">掛け金</label>
-            <input type="number" name="voting_amount" id="voting_amount" class="form-control" required>
-        </div>
-
-        <input type="hidden" name="race_date" value="{{ $raceDate }}" />
+        @include('voting_record.form')
 
         <!-- ボタン -->
         <button type="submit" class="btn btn-primary">保存する</button>

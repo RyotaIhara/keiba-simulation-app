@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Entities\VotingRecordsIndexView;
 use App\Services\Crud\VotingRecordService;
 use App\Services\Crud\RaceScheduleService;
 use App\Services\Crud\RaceInfoService;
@@ -18,6 +19,9 @@ class VotingRecordController extends Controller
     private $howToBuyMstService;
     private $raceInfoService;
 
+    const DEFAULT_PAZE = 1;
+    const RACE_NUM_DATAS = [1,2,3,4,5,6,7,8,9,10,11,12];
+
     public function __construct()
     {
         $this->votingRecordService = app(VotingRecordService::class);
@@ -27,33 +31,72 @@ class VotingRecordController extends Controller
         $this->raceInfoService = app(RaceInfoService::class);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $votingRecordsIndexViewDatas = $this->votingRecordsIndexViewService->getAllVotingRecordsIndexViewDatas();
+        $page = $request->query('page', self::DEFAULT_PAZE);
+        $pageSize = $request->query('page_size', config('config.INDEX_PAGE_SIZE'));
 
-        return view('voting_record.index', ['votingRecordsIndexViewDatas' => $votingRecordsIndexViewDatas]);
+        $tmpResult = $this->votingRecordsIndexViewService->getAllVotingRecordsIndexViewDatas($page, $pageSize);
+
+        return view('voting_record.index', [
+            'votingRecordsIndexViewDatas' => $tmpResult['data'],
+            'totalItems' => $tmpResult['totalItems'],
+            'page_size' => $pageSize,
+            'currentPage' => $tmpResult['currentPage'],
+            'totalPages' => $tmpResult['totalPages'],
+        ]);
     }
 
    public function create()
    {
-        $raceDate = '2025-01-15';
+        $raceDate = '2025-01-21';
         $whereParams = array(
             'race_date' => $raceDate
         );
 
         $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst($whereParams);
         $howToBuyMstDatas = $this->howToBuyMstService->getAllHowToBuyMsts();
-        $raceNumDatas = [1,2,3,4,5,6,7,8,9,10,11,12];
+        $raceNumDatas = self::RACE_NUM_DATAS;
+
+        $votingRecordsIndexViewData = new VotingRecordsIndexView();
 
         $params = [
             'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
             'howToBuyMstDatas' => $howToBuyMstDatas,
             'raceNumDatas' => $raceNumDatas,
-            'raceDate' => $raceDate
+            'raceDate' => $raceDate,
+            'votingRecordsIndexViewData' => $votingRecordsIndexViewData
         ];
 
         return view('voting_record.create', $params);
    }
+
+   public function copy(string $id)
+    {
+        $votingRecordsIndexViewData = $this->votingRecordsIndexViewService->getVotingRecordsIndexViewData($id);
+
+        $raceDate = $votingRecordsIndexViewData->getRaceDate()->format('Y-m-d');
+        $whereParams = array(
+            'race_date' => $raceDate
+        );
+
+        // 買い目だけリセット
+        $votingRecordsIndexViewData->setVotingUmaBan("");
+
+        $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst($whereParams);
+        $howToBuyMstDatas = $this->howToBuyMstService->getAllHowToBuyMsts();
+        $raceNumDatas = self::RACE_NUM_DATAS;
+
+        $params = [
+            'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
+            'howToBuyMstDatas' => $howToBuyMstDatas,
+            'raceNumDatas' => $raceNumDatas,
+            'raceDate' => $raceDate,
+            'votingRecordsIndexViewData' => $votingRecordsIndexViewData
+        ];
+
+        return view('voting_record.create', $params);
+    }
 
    public function store(Request $request)
    {
@@ -101,7 +144,7 @@ class VotingRecordController extends Controller
 
         $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst($whereParams);
         $howToBuyMstDatas = $this->howToBuyMstService->getAllHowToBuyMsts();
-        $raceNumDatas = [1,2,3,4,5,6,7,8,9,10,11,12];
+        $raceNumDatas = self::RACE_NUM_DATAS;
 
         $params = [
             'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,

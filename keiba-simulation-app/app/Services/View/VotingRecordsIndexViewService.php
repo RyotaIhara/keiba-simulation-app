@@ -14,9 +14,9 @@ class VotingRecordsIndexViewService extends ViewBase
     }
 
     /** voting_records_index_viewのデータ一覧を取得する **/
-    public function getAllVotingRecordsIndexViewDatas()
+    public function getAllVotingRecordsIndexViewDatas($page, $pageSize)
     {
-        return $this->entityManager->getRepository(VotingRecordsIndexView::class)->findAll();
+        return $this->entityManager->getRepository(VotingRecordsIndexView::class)->getAllVotingRecordsIndexViewDatas($page, $pageSize);
     }
 
     /** voting_records_idからvoting_records_index_viewテーブルのデータを取得する **/

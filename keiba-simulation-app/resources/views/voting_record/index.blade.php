@@ -29,7 +29,7 @@
                     <td>{{ $votingRecord->getVotingAmount() }}</td>
                     <td>{{ $votingRecord->getRefundAmount() }}</td>
                     <td>
-                        <a href="{{ route('voting_record.show', $votingRecord->getVotingRecordId()) }}" class="btn btn-info">詳細へ</a>
+                        <a href="{{ route('voting_record.copy', $votingRecord->getVotingRecordId()) }}" class="btn btn-info">複製</a>
                         <a href="{{ route('voting_record.edit', $votingRecord->getVotingRecordId()) }}" class="btn btn-warning">修正する</a>
                         <form action="{{ route('voting_record.destroy', $votingRecord->getVotingRecordId()) }}" method="POST" style="display:inline;">
                             @csrf
@@ -41,4 +41,44 @@
             @endforeach
         </tbody>
     </table>
+
+    @if ($totalPages > 1)
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            {{-- 前へリンク --}}
+            @if ($currentPage > 1)
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ $currentPage - 1 }}&page_size={{ request('page_size', 10) }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            @else
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;</span>
+                </li>
+            @endif
+
+            {{-- ページ番号リンク --}}
+            @for ($i = 1; $i <= $totalPages; $i++)
+                <li class="page-item {{ $i === $currentPage ? 'active' : '' }}">
+                    <a class="page-link" href="?page={{ $i }}&page_size={{ request('page_size', $page_size) }}">{{ $i }}</a>
+                </li>
+            @endfor
+
+            {{-- 次へリンク --}}
+            @if ($currentPage < $totalPages)
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ $currentPage + 1 }}&page_size={{ request('page_size', $page_size) }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            @else
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;</span>
+                </li>
+            @endif
+        </ul>
+    </nav>
+@endif
+
 @endsection

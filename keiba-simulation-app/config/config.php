@@ -10,4 +10,7 @@ return [
     'NETKEIBA_CENTRAL_RACE_DOMAIN_URL' =>'https://race.netkeiba.com/', // 中央競馬
     'NETKEIBA_LOCAL_RACE_DOMAIN_URL' =>'https://nar.netkeiba.com/', // 地方競馬
 
+    /** 設定値 **/
+    'INDEX_PAGE_SIZE' => 10
+
 ];

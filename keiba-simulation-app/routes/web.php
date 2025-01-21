@@ -10,3 +10,4 @@ Route::get('/', function () {
 
 Route::resource('racecourse_mst', RacecourseMstController::class);
 Route::resource('voting_record', VotingRecordController::class);
+Route::get('voting_record/{id}/copy', [VotingRecordController::class, 'copy'])->name('voting_record.copy');

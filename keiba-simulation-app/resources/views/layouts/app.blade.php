@@ -18,7 +18,10 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('racecourse_mst.create') }}">競馬場コード</a>
+                    <a class="nav-link" href="{{ route('racecourse_mst.index') }}">競馬場一覧</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('voting_record.index') }}">投票</a>
                 </li>
             </ul>
         </div>
