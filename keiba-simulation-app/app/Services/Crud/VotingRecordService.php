@@ -32,6 +32,11 @@ class VotingRecordService extends CrudBase
         return $this->entityManager->getRepository(VotingRecord::class)->findOneBy($whereParams);
     }
 
+    /** 対象日付から投票記録のデータを取得する **/
+    public function getVotingRecordByFromToDate($fromRaceDate, $toRaceDate) {
+        return $this->entityManager->getRepository(VotingRecord::class)->getVotingRecordByFromToDate($fromRaceDate, $toRaceDate);
+    }
+
     /** voting_recordにデータを作成する **/
     public function createVotingRecord(array $data)
     {
@@ -82,6 +87,9 @@ class VotingRecordService extends CrudBase
         $votingRecord->setVotingUmaBan($this->getValue($data, 'voting_uma_ban', 'votingUmaBan'));
         $votingRecord->setVotingAmount($this->getValue($data, 'voting_amount', 'votingAmount'));
         $votingRecord->setRefundAmount($this->getValue($data, 'refund_amount', 'refundAmount'));
+        if (!empty($this->getValue($data, 'hit_status', 'hitStatus'))) {
+            $votingRecord->setHitStatus($this->getValue($data, 'hit_status', 'hitStatus'));
+        }
         if (!empty($this->getValue($data, 'created_at', 'createdAt'))) {
             $votingRecord->setCreatedAt($this->getValue($data, 'created_at', 'createdAt'));
         }

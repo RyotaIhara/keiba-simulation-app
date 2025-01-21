@@ -66,7 +66,7 @@ class BatchRefundAmountService extends ScrapingBase
                 });
             });
         } catch ( \Exception $e ) {
-            echo "データの取得に失敗しました\n" . $e;
+            echo "データの取得に失敗しました\n";
 
             return [];
         }
@@ -87,7 +87,7 @@ class BatchRefundAmountService extends ScrapingBase
 
             $raceInfo = $raceInfoService->getRaceInfoByUniqueColumn($raceInfoCheckParams);
             if (empty($raceInfo)) {
-                echo "race_infoにデータが存在しません";
+                echo "race_infoにデータが存在しません \n";
                 return False; 
             }
 
@@ -154,7 +154,7 @@ class BatchRefundAmountService extends ScrapingBase
                 if (empty($raceRefundAmountData)) {
                     $raceRefundAmountService->createRaceRefundAmount($createParamsForRaceRefundAmount);
                 } else {
-                    echo 'すでに' . 'race_info_id：' . $raceInfo->getId() . ', how_to_buy_mst_code：' . $createParamsForRaceRefundAmount['how_to_buy_code'] . ', pattern：' . $pattern . 'のデータは存在します';
+                    echo 'すでに' . 'race_info_id：' . $raceInfo->getId() . ', how_to_buy_mst_code：' . $createParamsForRaceRefundAmount['how_to_buy_code'] . ', pattern：' . $pattern . 'のデータは存在します', " \n";
                 }
             }
 

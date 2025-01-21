@@ -14,7 +14,7 @@ class VotingRecordsIndexViewRepository extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('v');
 
         $queryBuilder
-            ->orderBy('v.votingRecordId', 'ASC')
+            ->orderBy('v.votingRecordId', 'DESC')
             ->setFirstResult(($page - 1) * $pageSize)
             ->setMaxResults($pageSize);
 

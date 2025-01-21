@@ -32,6 +32,11 @@ class RaceRefundAmountService extends CrudBase
         return $this->entityManager->getRepository(RaceRefundAmount::class)->findOneBy($whereParams);
     }
 
+     /** 特定の条件から複数のデータを取得する **/
+     public function getRaceRefundAmountDatas($whereParams) {
+        return $this->entityManager->getRepository(RaceRefundAmount::class)->findBy($whereParams);
+    }
+
     /** race_refund_amountにデータを作成する **/
     public function createRaceRefundAmount(array $data)
     {

@@ -22,7 +22,6 @@ class BatchRaceInfoImportCommand extends Command
      *
      * @var string
      */
-    //protected $signature = 'app:batch-race-info-import-command';
     protected $signature = 'app:batch-race-info-import-command 
                             {--fromRaceDate= : 開始日付} 
                             {--toRaceDate= : 終了日付}
