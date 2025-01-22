@@ -1,8 +1,19 @@
+@php
+    use Carbon\Carbon;
+@endphp
+
+<div class="form-group">
+    <label for="race_schedule">レース日</label>
+    <input type="text" class="form-control" value="{{ request('race_date', \Carbon\Carbon::today()->format('Y-m-d')) }}" disabled>
+</div>
+
 <div class="form-group">
     <label for="race_schedule">レース場を選択</label>
     <select name="racecourse_mst" id="racecourse_mst" class="form-control" required>
         @foreach ($raceSchedulesWithCourseDatas as $data)
-            <option value="{{ $data['jyo_cd'] }}" @if ($data['jyo_cd'] == $votingRecordsIndexViewData->getJyoCd()) selected @endif>{{ $data['racecourse_name'] }} ({{ $data['race_date'] }})</option>
+            <option value="{{ $data['jyo_cd'] }}" @if ($data['jyo_cd'] == $votingRecordsIndexViewData->getJyoCd()) selected @endif>
+                {{ $data['racecourse_name'] }} ({{ $data['race_date'] }})
+            </option>
         @endforeach
     </select>
 </div>

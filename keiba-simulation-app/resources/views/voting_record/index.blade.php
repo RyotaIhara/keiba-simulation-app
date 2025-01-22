@@ -2,7 +2,18 @@
 
 @section('content')
     <h1>投票履歴</h1>
-    <a href="{{ route('voting_record.create') }}" class="btn btn-primary">新規作成</a>
+
+    {{-- 検索フォーム --}}
+    @include('voting_record.search')
+
+    {{-- 新規作成ボタン --}}
+    <div style="margin-bottom: 30px;">
+        <a href="{{ route('voting_record.create', ['race_date' => request('race_date', \Carbon\Carbon::today()->format('Y-m-d'))]) }}" 
+        class="btn btn-primary">
+        「{{ request('race_date', \Carbon\Carbon::today()->format('Y-m-d')) }}」のデータを新規作成
+        </a>
+    </div>
+
     <table class="table">
         <thead>
             <tr>
@@ -13,6 +24,7 @@
                 <th>買い目</th>
                 <th>投票金額</th>
                 <th>払戻金</th>
+                <th>的中フラグ</th>
             </tr>
         </thead>
         <tbody>
@@ -28,6 +40,13 @@
                     <td>{{ $votingRecord->getVotingUmaBan() }}</td>
                     <td>{{ $votingRecord->getVotingAmount() }}</td>
                     <td>{{ $votingRecord->getRefundAmount() }}</td>
+                    <td>{{$votingRecord->getHitStatus()}}</td>
+                    <td>
+                        @if ($votingRecord->getHitStatus() == "1") 的中
+                        @elseif ($votingRecord->getHitStatus() == "2") ×
+                        @else 未確定
+                        @endif
+                    </td>
                     <td>
                         <a href="{{ route('voting_record.copy', $votingRecord->getVotingRecordId()) }}" class="btn btn-info">複製</a>
                         <a href="{{ route('voting_record.edit', $votingRecord->getVotingRecordId()) }}" class="btn btn-warning">修正する</a>
@@ -42,43 +61,6 @@
         </tbody>
     </table>
 
-    @if ($totalPages > 1)
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-            {{-- 前へリンク --}}
-            @if ($currentPage > 1)
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ $currentPage - 1 }}&page_size={{ request('page_size', 10) }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-            @else
-                <li class="page-item disabled">
-                    <span class="page-link">&laquo;</span>
-                </li>
-            @endif
-
-            {{-- ページ番号リンク --}}
-            @for ($i = 1; $i <= $totalPages; $i++)
-                <li class="page-item {{ $i === $currentPage ? 'active' : '' }}">
-                    <a class="page-link" href="?page={{ $i }}&page_size={{ request('page_size', $page_size) }}">{{ $i }}</a>
-                </li>
-            @endfor
-
-            {{-- 次へリンク --}}
-            @if ($currentPage < $totalPages)
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ $currentPage + 1 }}&page_size={{ request('page_size', $page_size) }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            @else
-                <li class="page-item disabled">
-                    <span class="page-link">&raquo;</span>
-                </li>
-            @endif
-        </ul>
-    </nav>
-@endif
-
+    {{-- ページャー --}}
+    @include('voting_record.pager')
 @endsection

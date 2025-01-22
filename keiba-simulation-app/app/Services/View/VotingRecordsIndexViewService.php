@@ -14,9 +14,14 @@ class VotingRecordsIndexViewService extends ViewBase
     }
 
     /** voting_records_index_viewのデータ一覧を取得する **/
-    public function getAllVotingRecordsIndexViewDatas($page, $pageSize)
+    public function getAllVotingRecordsIndexViewDatas($page, $pageSize, $searchForm)
     {
-        return $this->entityManager->getRepository(VotingRecordsIndexView::class)->getAllVotingRecordsIndexViewDatas($page, $pageSize);
+        $whereParams = [
+            'raceDate' => $searchForm['raceDate'],
+            'raceNum' => $searchForm['raceNum'],
+            'jyoCd' => $searchForm['racecourse']
+        ];
+        return $this->entityManager->getRepository(VotingRecordsIndexView::class)->getAllVotingRecordsIndexViewDatas($page, $pageSize, $whereParams);
     }
 
     /** voting_records_idからvoting_records_index_viewテーブルのデータを取得する **/

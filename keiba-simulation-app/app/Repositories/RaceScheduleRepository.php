@@ -29,7 +29,7 @@ class RaceScheduleRepository extends EntityRepository
         ";
 
         $connection = $this->getEntityManager()->getConnection();
-        $result = $connection->executeQuery($sql, ['race_date' => $whereParams['race_date']]);
+        $result = $connection->executeQuery($sql, ['race_date' => $whereParams['raceDate']]);
 
         return $result->fetchAllAssociative();
     }

@@ -28,8 +28,8 @@ class VotingRecordsIndexView
     #[ORM\Column(type: "integer", name: "refund_amount")]
     private int $refundAmount;
 
-    #[ORM\Column(type: "boolean", name: "hit_status")]
-    private bool $hitStatus;
+    #[ORM\Column(type: "integer", name: "hit_status")]
+    private int $hitStatus;
 
     #[ORM\Column(type: "string", name: "racecourse_name")]
     private string $racecourseName;
@@ -109,12 +109,12 @@ class VotingRecordsIndexView
         $this->refundAmount = $refundAmount;
     }
 
-    public function getHitStatus(): bool
+    public function getHitStatus(): int
     {
         return $this->hitStatus;
     }
 
-    public function setHitStatus(bool $hitStatus): void
+    public function setHitStatus(int $hitStatus): void
     {
         $this->hitStatus = $hitStatus;
     }

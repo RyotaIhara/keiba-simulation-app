@@ -36,31 +36,50 @@ class VotingRecordController extends Controller
         $page = $request->query('page', self::DEFAULT_PAZE);
         $pageSize = $request->query('page_size', config('config.INDEX_PAGE_SIZE'));
 
-        $tmpResult = $this->votingRecordsIndexViewService->getAllVotingRecordsIndexViewDatas($page, $pageSize);
+        // 検索
+        $raceDate = $request->query('race_date', date('Y-m-d'));
+        $raceNum =$request->query('racecourse_mst', NULL);
+        $racecourse = $request->query('race_num', NULL);
+
+        $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst([
+            'raceDate' => $raceDate
+        ]);
+
+        $searchForm = [
+            'raceDate' => $raceDate,
+            'raceNum' => $raceNum,
+            'racecourse' => $racecourse
+        ];
+        $tmpResult = $this->votingRecordsIndexViewService->getAllVotingRecordsIndexViewDatas($page, $pageSize, $searchForm);
 
         return view('voting_record.index', [
             'votingRecordsIndexViewDatas' => $tmpResult['data'],
             'totalItems' => $tmpResult['totalItems'],
-            'page_size' => $pageSize,
+            'pageSize' => $pageSize,
             'currentPage' => $tmpResult['currentPage'],
             'totalPages' => $tmpResult['totalPages'],
+            //検索フォーム関連
+            'raceDate' => $raceDate,
+            'raceNum' => $raceNum,
+            'racecourse' => $racecourse,
+            'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
         ]);
     }
 
-   public function create()
+   public function create(Request $request)
    {
-        $raceDate = '2025-01-21';
-        $whereParams = array(
-            'race_date' => $raceDate
-        );
+        $raceDate = $request->query('race_date', date('Y-m-d'));
 
-        $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst($whereParams);
+        $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst([
+            'raceDate' => $raceDate
+        ]);
         $howToBuyMstDatas = $this->howToBuyMstService->getAllHowToBuyMsts();
         $raceNumDatas = self::RACE_NUM_DATAS;
 
         $votingRecordsIndexViewData = new VotingRecordsIndexView();
 
         $params = [
+            'subTitle' => '新規作成',
             'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
             'howToBuyMstDatas' => $howToBuyMstDatas,
             'raceNumDatas' => $raceNumDatas,
@@ -76,18 +95,18 @@ class VotingRecordController extends Controller
         $votingRecordsIndexViewData = $this->votingRecordsIndexViewService->getVotingRecordsIndexViewData($id);
 
         $raceDate = $votingRecordsIndexViewData->getRaceDate()->format('Y-m-d');
-        $whereParams = array(
-            'race_date' => $raceDate
-        );
 
         // 買い目だけリセット
         $votingRecordsIndexViewData->setVotingUmaBan("");
 
-        $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst($whereParams);
+        $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst([
+            'raceDate' => $raceDate
+        ]);
         $howToBuyMstDatas = $this->howToBuyMstService->getAllHowToBuyMsts();
         $raceNumDatas = self::RACE_NUM_DATAS;
 
         $params = [
+            'subTitle' => '複製',
             'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
             'howToBuyMstDatas' => $howToBuyMstDatas,
             'raceNumDatas' => $raceNumDatas,
@@ -138,15 +157,16 @@ class VotingRecordController extends Controller
         $votingRecordsIndexViewData = $this->votingRecordsIndexViewService->getVotingRecordsIndexViewData($id);
 
         $raceDate = $votingRecordsIndexViewData->getRaceDate()->format('Y-m-d');
-        $whereParams = array(
-            'race_date' => $raceDate
-        );
 
-        $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst($whereParams);
+        $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst([
+            'raceDate' => $raceDate
+        ]);
+
         $howToBuyMstDatas = $this->howToBuyMstService->getAllHowToBuyMsts();
         $raceNumDatas = self::RACE_NUM_DATAS;
 
         $params = [
+            'subTitle' => '編集',
             'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
             'howToBuyMstDatas' => $howToBuyMstDatas,
             'raceNumDatas' => $raceNumDatas,
