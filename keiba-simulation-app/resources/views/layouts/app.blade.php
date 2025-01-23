@@ -23,6 +23,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('voting_record.index') }}">投票</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('voting_record.totalling') }}">集計</a>
+                </li>
             </ul>
         </div>
     </nav>

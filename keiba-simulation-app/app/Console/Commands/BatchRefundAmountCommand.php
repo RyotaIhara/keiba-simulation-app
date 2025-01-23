@@ -26,7 +26,8 @@ class BatchRefundAmountCommand extends Command
     protected $signature = 'app:batch-refund-amount-command
                             {--fromRaceDate= : 開始日付} 
                             {--toRaceDate= : 終了日付}
-                            {--raceId= : レースID}';
+                            {--raceId= : レースID}
+                            {--startRaceNum= : 集計をスタートするレース番号}';
 
     /**
      * The console command description.
@@ -36,6 +37,9 @@ class BatchRefundAmountCommand extends Command
     protected $description = '
         払戻金のデータをnetkeibaのサイトから取得して、race_refund_amountテーブルにインサートする。
     ';
+
+    /** 定数 **/
+    const DEFAULT_START_RACE_NUM = 1;
 
     /**
      * Execute the console command.
@@ -49,6 +53,7 @@ class BatchRefundAmountCommand extends Command
         $fromRaceDate = $this->option('fromRaceDate') ?: NULL;
         $toRaceDate = $this->option('toRaceDate') ?: NULL;
         $optionRaceId = $this->option('raceId') ?: NULL;
+        $startRaceNum = $this->option('startRaceNum') ?: self::DEFAULT_START_RACE_NUM;
 
         if (!(is_null($fromRaceDate) && is_null($toRaceDate)) || !is_null($optionRaceId)) {
             //この場合はうまくいくので処理続行
@@ -103,7 +108,7 @@ class BatchRefundAmountCommand extends Command
                     $raceCount = $batchRaceInfoImportService->getCountOfRaces($raceIdForGetRaceCount);
                 }
 
-                for ($raceNum = 1; $raceNum <= $raceCount; $raceNum++) {
+                for ($raceNum = $startRaceNum; $raceNum <= $raceCount; $raceNum++) {
                     $raceId = $year . $jyoCd . $month . $day . str_pad($raceNum, 2, '0', STR_PAD_LEFT);
 
                     $refundAmountResult = $batchRefundAmountService->getLocalRaceRefundAmountByNetkeiba($raceId);

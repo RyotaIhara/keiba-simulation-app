@@ -51,7 +51,10 @@ class BatchUpdateVotingRefundAmountCommand extends Command
             return 0;
         }
 
-        $votingRecordDatas = $batchUpdateVotingRefundAmountService->getVotingRecordByFromToDate($fromRaceDate, $toRaceDate);
+        $otherWhereParams = [
+            'hitStatus' => 0
+        ];
+        $votingRecordDatas = $batchUpdateVotingRefundAmountService->getVotingRecordByFromToDate($fromRaceDate, $toRaceDate, $otherWhereParams);
 
         foreach ($votingRecordDatas as $votingRecord) {
             $batchUpdateVotingRefundAmountService->updateVotingRefundAmount($votingRecord);

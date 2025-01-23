@@ -7,6 +7,7 @@ use App\Services\Crud\VotingRecordService;
 use App\Services\Crud\RaceScheduleService;
 use App\Services\Crud\RaceInfoService;
 use App\Services\Crud\HowToBuyMstService;
+use App\Services\Crud\RacecourseMstService;
 use App\Services\View\VotingRecordsIndexViewService;
 use Illuminate\Http\Request;
 use DateTime;
@@ -18,6 +19,7 @@ class VotingRecordController extends Controller
     private $raceScheduleService;
     private $howToBuyMstService;
     private $raceInfoService;
+    private $racecourseMstService;
 
     const DEFAULT_PAZE = 1;
     const RACE_NUM_DATAS = [1,2,3,4,5,6,7,8,9,10,11,12];
@@ -29,8 +31,10 @@ class VotingRecordController extends Controller
         $this->raceScheduleService = app(RaceScheduleService::class);
         $this->howToBuyMstService = app(HowToBuyMstService::class);
         $this->raceInfoService = app(RaceInfoService::class);
+        $this->racecourseMstService = app(RacecourseMstService::class);
     }
 
+    /** 投票一覧（日付ごと） **/
     public function index(Request $request)
     {
         $page = $request->query('page', self::DEFAULT_PAZE);
@@ -63,6 +67,39 @@ class VotingRecordController extends Controller
             'raceNum' => $raceNum,
             'racecourse' => $racecourse,
             'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
+        ]);
+    }
+
+    /** 日付ごとの集計記録 **/
+    public function totalling(Request $request)
+    {
+        // 検索
+        $fromRaceDate = $request->query('start_race_date', date('Y-m-d'));
+        $toRaceDate = $request->query('end_race_date', date('Y-m-d'));
+        $racecourse = $request->query('racecourse', NULL);
+
+        $otherWhereParams = [
+            'jyoCd' => $racecourse,
+        ];
+        $totallingDatas = $this->votingRecordService->getVotingRecordByFromToDate($fromRaceDate, $toRaceDate, $otherWhereParams);
+
+        $totalVotingAmount = 0;
+        $totalRefundAmount = 0;
+
+        foreach ($totallingDatas as $votingRecord) {
+            $totalVotingAmount += $votingRecord->getVotingAmount();
+            $totalRefundAmount += $votingRecord->getRefundAmount();
+
+        }
+
+        return view('voting_record.totalling.totalling', [
+            'totalVotingAmount' => $totalVotingAmount,
+            'totalRefundAmount' => $totalRefundAmount,
+            //検索フォーム関連
+            'fromRaceDate' => $fromRaceDate,
+            'toRaceDate' => $toRaceDate,
+            'racecourseMst' => $racecourse = NULL ? NULL : $this->racecourseMstService->getRacecourseMstByUniqueColumn(['jyoCd' => $racecourse]),
+            'raceCourseDatas' => $this->racecourseMstService->getAllRacecourseMsts(),
         ]);
     }
 

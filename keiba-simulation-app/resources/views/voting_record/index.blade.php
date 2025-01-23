@@ -6,13 +6,21 @@
     {{-- 検索フォーム --}}
     @include('voting_record.search')
 
-    {{-- 新規作成ボタン --}}
-    <div style="margin-bottom: 30px;">
-        <a href="{{ route('voting_record.create', ['race_date' => request('race_date', \Carbon\Carbon::today()->format('Y-m-d'))]) }}" 
-        class="btn btn-primary">
-        「{{ request('race_date', \Carbon\Carbon::today()->format('Y-m-d')) }}」のデータを新規作成
-        </a>
+    <div class="d-flex justify-content-start align-items-center mb-4">
+        {{-- 新規作成ボタン --}}
+        <div class="me-3">
+            <a href="{{ route('voting_record.create', ['race_date' => request('race_date', \Carbon\Carbon::today()->format('Y-m-d'))]) }}" 
+               class="btn btn-primary">
+                「{{ request('race_date', \Carbon\Carbon::today()->format('Y-m-d')) }}」のデータを新規作成
+            </a>
+        </div>
+    
+        {{-- 集計ボタン --}}
+        <div style="margin-left: 10px;">
+            <a href="{{ route('voting_record.totalling') }}" class="btn btn-success">集計</a>
+        </div>
     </div>
+    
 
     <table class="table">
         <thead>

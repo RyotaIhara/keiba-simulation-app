@@ -10,9 +10,9 @@ use DateTime;
 class BatchUpdateVotingRefundAmountService extends ScrapingBase
 {
     /** 対象日付から投票記録のデータを取得する **/
-    public function getVotingRecordByFromToDate($fromRaceDate, $toRaceDate) {
+    public function getVotingRecordByFromToDate($fromRaceDate, $toRaceDate, $otherWhereParams) {
         $votingRecordService = app(VotingRecordService::class);
-        return $votingRecordService->getVotingRecordByFromToDate($fromRaceDate, $toRaceDate);
+        return $votingRecordService->getVotingRecordByFromToDate($fromRaceDate, $toRaceDate, $otherWhereParams);
     }
 
     /** 投票記録の払戻金データを更新する **/
