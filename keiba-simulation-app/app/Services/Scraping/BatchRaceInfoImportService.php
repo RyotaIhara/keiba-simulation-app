@@ -125,19 +125,28 @@ class BatchRaceInfoImportService extends ScrapingBase
 
             $raceInfo = $raceInfoService->getRaceInfoByUniqueColumn($raceInfoCheckParams);
             if (empty($raceInfo)) {
+                // 新規作成
                 $raceInfoService->createRaceInfo($raceInfoArray);
                 $raceInfo = $raceInfoService->getRaceInfoByUniqueColumn($raceInfoCheckParams);
+            } else {
+                // 更新
+                $raceInfoService->updateRaceInfo($raceInfo->getId(), $raceInfoArray);
             }
 
             foreach ($raceInfoData['horceInfoList'] as $horseInfo) {
+                $horseInfo['race_info_id'] = $raceInfo->getId();
+    
                 $raceCardCheckParams = array(
                     'raceInfo' => $raceInfo,
                     'umaBan' => $horseInfo['uma_ban'],
                 );
                 $raceCard = $raceCardService->getRaceCardByUniqueColumn($raceCardCheckParams);
                 if (empty($raceCard)) {
-                    $horseInfo['race_info_id'] = $raceInfo->getId();
+                    // 新規作成
                     $raceCardService->createRaceCard($horseInfo);
+                } else {
+                    // 更新
+                    $raceCardService->updateRaceCard($raceCard->getId(), $horseInfo);
                 }
             }
         } catch (\Exception $e) {
