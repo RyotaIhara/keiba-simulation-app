@@ -54,7 +54,6 @@ class BatchUpdateVotingRefundAmountCommand extends Command
         $votingRecordDatas = $batchUpdateVotingRefundAmountService->getVotingRecordByFromToDate($fromRaceDate, $toRaceDate);
 
         foreach ($votingRecordDatas as $votingRecord) {
-            //var_dump($votingRecord);
             $batchUpdateVotingRefundAmountService->updateVotingRefundAmount($votingRecord);
         }
 

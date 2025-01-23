@@ -36,8 +36,8 @@ class BatchRefundAmountService extends ScrapingBase
                 });
 
                 $node->filter('tr.Umaren')->each(function ($trNode) use(&$result) {
-                    $result['Wakuren']['Result'] = $this->formatRefundAmountData($trNode);
-                    $result['Wakuren']['Payout'] =$trNode->filter('td.Payout')->text();
+                    $result['Umaren']['Result'] = $this->formatRefundAmountData($trNode);
+                    $result['Umaren']['Payout'] =$trNode->filter('td.Payout')->text();
                 });
 
                 $node->filter('tr.Wide')->each(function ($trNode) use(&$result) {
