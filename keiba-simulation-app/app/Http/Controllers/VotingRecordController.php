@@ -258,10 +258,42 @@ class VotingRecordController extends Controller
             }
         }
         else if ($howToVote === 'boxTemplate') {
-            // ボックス用のメソッドを呼ぶ
+            // ボックス用の処理を行う
+            $formatParams = [
+                'raceInfoId'      => $raceInfo->getId(),
+                'howToBuyBox'     => $request->input('how_to_buy_box'), // 識別（単勝、複勝、etc）
+                'votingUmaBanBox' => $request->input('voting_uma_ban_box'), // 対象馬
+                'votingAmountBox' => $request->input('voting_amount_box'), // 掛け金
+            ];
+
+            // まずParamのエラーチェック
+            if ($this->votingRecordGeneral->checkBoxData($formatParams)) {
+                // 問題なければ整形作業をして、インサート用配列のリストを受け取る
+                $paramsForInsertList = $this->votingRecordGeneral->formatBoxData($formatParams);
+            } else {
+                // もしフォーマットエラーだった場合
+                return redirect()->route('voting_record.createSpecialMethod')->with('erroe', '形式に問題があります');
+            }
         }
         else if ($howToVote === 'formationTemplate') {
-            // フォーメーション用のメソッドを呼ぶ
+            // フォーメーション用の処理を行う
+            $formatParams = [
+                'raceInfoId'            => $raceInfo->getId(),
+                'howToBuyFormation'     => $request->input('how_to_buy_formaation'), // 識別（単勝、複勝、etc）
+                'votingUmaBan1'         => $request->input('voting_uma_ban_1_formaation'), /// フォーメーションの1着
+                'votingUmaBan2'         => $request->input('voting_uma_ban_2_formaation'), /// フォーメーションの2着
+                'votingUmaBan3'         => $request->input('voting_uma_ban_3_formaation'), /// フォーメーションの3着
+                'votingAmountFormation' => $request->input('voting_amount_formaation'), // 掛け金
+            ];
+
+            // まずParamのエラーチェック
+            if ($this->votingRecordGeneral->checkFormationData($formatParams)) {
+                // 問題なければ整形作業をして、インサート用配列のリストを受け取る
+                $paramsForInsertList = $this->votingRecordGeneral->formatFormationData($formatParams);
+            } else {
+                // もしフォーマットエラーだった場合
+                return redirect()->route('voting_record.createSpecialMethod')->with('erroe', '形式に問題があります');
+            }
         }
         else {
             return redirect()->route('voting_record.createSpecialMethod')->with('erroe', '投票方式を入力してください');
