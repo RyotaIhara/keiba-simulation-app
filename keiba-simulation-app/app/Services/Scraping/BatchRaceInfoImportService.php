@@ -25,7 +25,7 @@ class BatchRaceInfoImportService extends ScrapingBase
 
                 $distance = $node->filter('span')->eq(0)->text();
 
-                if (preg_match('/^(ダ|芝|障)(\d+m)$/', $distance, $matches)) {
+                if (preg_match('/^(ダ|芝|障|直)(\d+m)$/', $distance, $matches)) {
                     $raceInfo['course_type'] = $matches[1];
                     $raceInfo['distance'] = $distance = $matches[2];
                     if (preg_match('/^(\d+)m$/', trim($distance), $matches2)) {
@@ -36,8 +36,8 @@ class BatchRaceInfoImportService extends ScrapingBase
                 }
 
                 // コース
-                preg_match('/\((右|左|直)\)/', $timeText, $courseMatch);
-                $raceInfo['rotation'] = str_replace(['(', ')'], '', $courseMatch[0])?? '';;
+                preg_match('/\((右|左)\)/', $timeText, $courseMatch);
+                $raceInfo['rotation'] = isset($courseMatch[0]) ? str_replace(['(', ')'], '', $courseMatch[0]) : '';
 
                 // 天候
                 preg_match('/天候:([^\s<]+)/', $timeText, $weatherMatch);

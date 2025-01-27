@@ -14,13 +14,20 @@
                 「{{ request('race_date', \Carbon\Carbon::today()->format('Y-m-d')) }}」のデータを新規作成
             </a>
         </div>
-    
+
+        {{-- 特殊方式での新規作成ボタン --}}
+        <div style="margin-left: 10px;">
+            <a href="{{ route('voting_record.createSpecialMethod', ['race_date' => request('race_date', \Carbon\Carbon::today()->format('Y-m-d'))]) }}" 
+               class="btn btn-info">
+               特殊方式でデータを新規作成
+            </a>
+        </div>
+
         {{-- 集計ボタン --}}
         <div style="margin-left: 10px;">
             <a href="{{ route('voting_record.totalling') }}" class="btn btn-success">集計</a>
         </div>
     </div>
-    
 
     <table class="table">
         <thead>

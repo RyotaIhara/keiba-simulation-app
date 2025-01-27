@@ -1,0 +1,9 @@
+■やることリスト
+
+（１）
+namespace App\Http\Controllers\VotingRecordController.php::createVotingRecord
+メソッドの統一（コントローラー内でいい）
+
+（２）上記コントローラーで
+howToBuyMstDatasのデータ取得方法をメソッド化する（コントローラー内でいい）
+
