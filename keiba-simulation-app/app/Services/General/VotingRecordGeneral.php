@@ -187,8 +187,8 @@ class VotingRecordGeneral extends GeneralBase
                 foreach ($votingUmaBanList_2 as $umaBan_2) {
                     foreach ($votingUmaBanList_3 as $umaBan_3) {
                         if ($umaBan_1 != $umaBan_2 
-                                || $umaBan_1 != $umaBan_3
-                                || $umaBan_2 != $umaBan_3) {
+                                && $umaBan_1 != $umaBan_3
+                                && $umaBan_2 != $umaBan_3) {
                             $tmpParamsForInsert['voting_uma_ban'] = $umaBan_1 . ',' . $umaBan_2 . ',' . $umaBan_3;
 
                             $paramsForInsertList[] = $tmpParamsForInsert;
