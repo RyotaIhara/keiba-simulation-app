@@ -21,6 +21,9 @@
                     <a class="nav-link" href="{{ route('racecourse_mst.index') }}">競馬場一覧</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('user.index') }}">ユーザー</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{{ route('voting_record.index') }}">投票</a>
                 </li>
                 <li class="nav-item">
