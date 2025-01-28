@@ -20,19 +20,26 @@ class AuthGeneral extends GeneralBase
     /** ログイン処理を実施する **/
     public function execLogin($user) {
         // トークン生成
-        $token = hash('sha256', Str::random(60) . $user->getCode());
+        $authToken = hash('sha256', Str::random(60) . $user->getCode());
+
+        $loginSession = $this->loginSessionService->getLoginSessionByToken($authToken);
+
+        if (!empty($loginSession)) {
+            // 重複削除するために既存のものは有効期限切れにする
+            $this->loginSessionService->updateExpireTime($loginSession, new DateTime(date('Y-m-d H:i:s')));
+        }
 
         // トークンを保存
         $paramsForInsert = array(
             'user' => $user,
-            'token' => $token,
+            'token' => $authToken,
             'expireTime' => (new DateTime())->modify('+1 day'),
             'createdAt' => new DateTime(date('Y-m-d H:i:s')),
         );
         $this->loginSessionService->createLoingSession($paramsForInsert);
 
         // セッションにトークンを保存
-        Session::put('auth_token', $token);
+        Session::put('auth_token', $authToken);
         Session::put('sessionUserName', $user->getUserName());
 
         $token = Session::get('auth_token');
