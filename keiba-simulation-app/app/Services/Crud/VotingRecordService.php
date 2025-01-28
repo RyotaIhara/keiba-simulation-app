@@ -7,6 +7,7 @@ use App\Entities\VotingRecord;
 use App\Services\Crud\CrudBase;
 use App\Services\Crud\RaceInfoService;
 use App\Services\Crud\HowToBuyMstService;
+use App\Services\General\AuthGeneral;
 
 class VotingRecordService extends CrudBase
 {
@@ -77,6 +78,9 @@ class VotingRecordService extends CrudBase
         $howToBuyMstService = app(HowToBuyMstService::class);
         $howToBuyMst = $howToBuyMstService->getHowToBuyMst($this->getValue($data, 'how_to_buy_mst_id', 'howToBuyMstId'));
 
+        $authGeneral = app(AuthGeneral::class);
+
+        $votingRecord->setUser($authGeneral->getLoginUser());
         $votingRecord->setRaceInfo($raceInfo);
         $votingRecord->setHowToBuyMst($howToBuyMst);
         $votingRecord->setVotingUmaBan($this->getValue($data, 'voting_uma_ban', 'votingUmaBan'));

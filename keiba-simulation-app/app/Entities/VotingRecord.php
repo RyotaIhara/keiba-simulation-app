@@ -16,6 +16,10 @@ class VotingRecord
     #[ORM\Column(type: "integer")]
     private int $id;
 
+    #[ORM\ManyToOne(targetEntity: "App\Entities\User")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: false)]
+    private User $user;
+
     #[ORM\ManyToOne(targetEntity: "App\Entities\RaceInfo")]
     #[ORM\JoinColumn(name: "race_info_id", referencedColumnName: "id", nullable: false)]
     private RaceInfo $raceInfo;
@@ -46,6 +50,16 @@ class VotingRecord
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getUser(): User 
+    {
+        return $this->user;
+    }
+
+    public function setUser(User  $user): void
+    {
+        $this->user = $user;
     }
 
     public function getRaceInfo(): RaceInfo 

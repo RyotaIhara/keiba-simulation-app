@@ -73,4 +73,13 @@ class AuthGeneral extends GeneralBase
 
         return "";
     }
+
+    public function getLoginUser() {
+        $authToken = Session::get('auth_token');
+        $loginSession = $this->loginSessionService->getLoginSessionByToken($authToken);
+
+        if (!empty($loginSession->getUser()->getUserName())) {
+            return $loginSession->getuser();
+        };
+    }
 }
