@@ -10,9 +10,9 @@ class UserController extends Controller
 {
     private $userService;
 
-    public function __construct(UserService $userService)
+    public function __construct()
     {
-        $this->userService = $userService;
+        $this->userService = app(UserService::class);
     }
 
     public function index()

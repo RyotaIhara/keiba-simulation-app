@@ -112,6 +112,10 @@ class VotingRecordController extends Controller
     /** 通常方式でのデータ作成（create） **/
     public function create(Request $request)
     {
+        if (!$this->isLogin()) {
+            return redirect()->route('login')->with('success', 'ログインしてください');
+        }
+
         // 投票する対象日を取得
         $raceDate = $request->query('race_date', date('Y-m-d'));
 
