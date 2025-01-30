@@ -72,23 +72,29 @@ class VotingRecordService extends CrudBase
     /** createやupdate用にデータをセットする **/
     private function setVotingRecord($votingRecord, $data)
     {
-        $raceInfoService = app(RaceInfoService::class);
-        $raceInfo = $raceInfoService->getRaceInfo($this->getValue($data, 'race_info_id', 'raceInfoId'));
-
-        $howToBuyMstService = app(HowToBuyMstService::class);
-        $howToBuyMst = $howToBuyMstService->getHowToBuyMst($this->getValue($data, 'how_to_buy_mst_id', 'howToBuyMstId'));
-
         $authGeneral = app(AuthGeneral::class);
 
         $votingRecord->setUser($authGeneral->getLoginUser());
-        $votingRecord->setRaceInfo($raceInfo);
-        $votingRecord->setHowToBuyMst($howToBuyMst);
+        $votingRecord->setRaceInfo($this->getValue($data, 'race_info', 'raceInfo'));
+        $votingRecord->setHowToBuyMst($this->getValue($data, 'how_to_buy_mst', 'howToBuyMst'));
         $votingRecord->setVotingUmaBan($this->getValue($data, 'voting_uma_ban', 'votingUmaBan'));
         $votingRecord->setVotingAmount($this->getValue($data, 'voting_amount', 'votingAmount'));
         $votingRecord->setRefundAmount($this->getValue($data, 'refund_amount', 'refundAmount'));
         if (!empty($this->getValue($data, 'hit_status', 'hitStatus'))) {
             $votingRecord->setHitStatus($this->getValue($data, 'hit_status', 'hitStatus'));
         }
+
+        // フォーメーション・ボックス・ながしの場合
+        if (!empty($this->getValue($data, 'formation_voting_record', 'formationVotingRecord'))) {
+            $votingRecord->setFormationVotingRecord($this->getValue($data, 'formation_voting_record', 'formationVotingRecord'));
+        }
+        if (!empty($this->getValue($data, 'box_voting_record', 'boxVotingRecord'))) {
+            $votingRecord->setBoxVotingRecord($this->getValue($data, 'box_voting_record', 'boxVotingRecord'));
+        }
+        if (!empty($this->getValue($data, 'nagashi_voting_record', 'nagashiVotingRecord'))) {
+            $votingRecord->setNagashiVotingRecord($this->getValue($data, 'nagashi_voting_record', 'nagashiVotingRecord'));
+        }
+
         if (!empty($this->getValue($data, 'created_at', 'createdAt'))) {
             $votingRecord->setCreatedAt($this->getValue($data, 'created_at', 'createdAt'));
         }

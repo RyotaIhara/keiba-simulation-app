@@ -28,7 +28,7 @@ class VotingRecord
     #[ORM\JoinColumn(name: "how_to_buy_mst_id", referencedColumnName: "id", nullable: false)]
     private HowToBuyMst $howToBuyMst;
 
-    #[ORM\Column(type: "string", length: 11, name: "voting_uma_ban")]
+    #[ORM\Column(type: "string", length: 50, name: "voting_uma_ban")]
     private string $votingUmaBan;
 
     #[ORM\Column(type: "integer", name: "voting_amount")]
@@ -40,6 +40,18 @@ class VotingRecord
     /** （0：未確定、1：的中、2：外れ） **/
     #[ORM\Column(type: "integer", name: "hit_status")]
     private int $hitStatus = self::DEFALT_HIT_STATUS;
+
+    #[ORM\ManyToOne(targetEntity: "App\Entities\FormationVotingRecord")]
+    #[ORM\JoinColumn(name: "formation_voting_record_id", referencedColumnName: "id", nullable: false)]
+    private FormationVotingRecord $formationVotingRecord;
+
+    #[ORM\ManyToOne(targetEntity: "App\Entities\BoxVotingRecord")]
+    #[ORM\JoinColumn(name: "box_voting_record_id", referencedColumnName: "id", nullable: false)]
+    private BoxVotingRecord $boxVotingRecord;
+
+    #[ORM\ManyToOne(targetEntity: "App\Entities\NagashiVotingRecord")]
+    #[ORM\JoinColumn(name: "nagashi_voting_record_id", referencedColumnName: "id", nullable: false)]
+    private NagashiVotingRecord $nagashiVotingRecord;
 
     #[ORM\Column(type: "datetime", name: "created_at", nullable: true)]
     private ?\DateTime $createdAt;
@@ -120,6 +132,36 @@ class VotingRecord
     public function setHitStatus(int $hitStatus): void
     {
         $this->hitStatus = $hitStatus;
+    }
+
+    public function getFormationVotingRecord(): FormationVotingRecord
+    {
+        return $this->formationVotingRecord;
+    }
+
+    public function setFormationVotingRecord(FormationVotingRecord $formationVotingRecord): void
+    {
+        $this->formationVotingRecord = $formationVotingRecord;
+    }
+
+    public function getBoxVotingRecord(): BoxVotingRecord
+    {
+        return $this->boxVotingRecord;
+    }
+
+    public function setBoxVotingRecord(BoxVotingRecord $boxVotingRecord): void
+    {
+        $this->boxVotingRecord = $boxVotingRecord;
+    }
+
+    public function getNagashiVotingRecord(): NagashiVotingRecord
+    {
+        return $this->nagashiVotingRecord;
+    }
+
+    public function setNagashiVotingRecord(NagashiVotingRecord $nagashiVotingRecord): void
+    {
+        $this->nagashiVotingRecord = $nagashiVotingRecord;
     }
 
     public function getCreatedAt(): ?\DateTime

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Entities\VotingRecordsIndexView;
 use App\Services\Crud\VotingRecordService;
+use App\Services\Crud\BoxVotingRecordService;
+use App\Services\Crud\FormationVotingRecordService;
+use App\Services\Crud\NagashiVotingRecordService;
 use App\Services\Crud\RaceScheduleService;
 use App\Services\Crud\RaceInfoService;
 use App\Services\Crud\HowToBuyMstService;
@@ -16,6 +19,9 @@ use DateTime;
 class VotingRecordController extends Controller
 {
     private $votingRecordService;
+    private $boxVotingRecordService;
+    private $formationVotingRecordService;
+    private $nagashiVotingRecordService;
     private $votingRecordsIndexViewService;
     private $raceScheduleService;
     private $howToBuyMstService;
@@ -29,6 +35,9 @@ class VotingRecordController extends Controller
     public function __construct()
     {
         $this->votingRecordService = app(VotingRecordService::class);
+        $this->boxVotingRecordService = app(BoxVotingRecordService::class);
+        $this->formationVotingRecordService = app(FormationVotingRecordService::class);
+        $this->nagashiVotingRecordService = app(NagashiVotingRecordService::class);
         $this->votingRecordsIndexViewService = app(VotingRecordsIndexViewService::class);
         $this->raceScheduleService = app(RaceScheduleService::class);
         $this->howToBuyMstService = app(HowToBuyMstService::class);
@@ -226,6 +235,8 @@ class VotingRecordController extends Controller
     /** 特殊方式でのデータ作成（store） **/
     public function storeSpecialMethod(Request $request)
     {
+        $howToBuyMstService = app(HowToBuyMstService::class);
+
         // 投票データ作成にrace_info_idが必要なので取得
         $raceInfo = $this->raceInfoService->getRaceInfoByUniqueColumn([
             'raceDate' => new DateTime($request->input('race_date')),
@@ -238,60 +249,98 @@ class VotingRecordController extends Controller
         $paramsForInsertList = [];
 
         if ($howToVote === 'nagashiTemplate') {
-            // 「流し」用の処理を行う
+            $howToBuyMst = $howToBuyMstService->getHowToBuyMst($request->input('how_to_buy_nagashi'));
+
+            // 先にnagashi_voting_recordにはデータは作っておく
+            $nagashiVotingRecord = $this->nagashiVotingRecordService->createNagashiVotingRecord([
+                'raceInfo' => $raceInfo,
+                'howToBuyMst' => $howToBuyMst,
+                'howToNagashi' => $request->input('how_to_nagashi'),
+                'shaft' => $request->input('shaft'),
+                'partner' => $request->input('partner'),
+                'votingAmountNagashi' => $request->input('voting_amount_nagashi'),
+                'createdAt' => new DateTime(date('Y-m-d H:i:s')),
+                'updatedAt' => new DateTime(date('Y-m-d H:i:s')),
+            ]);
+
+            // 「流し」用のフォーマット処理を行う
             $formatParams = [
-                'raceInfoId'      => $raceInfo->getId(),
-                'howToBuyNagashi' => $request->input('how_to_buy_nagashi'), // 識別（単勝、複勝、etc）
+                'raceInfo'        => $raceInfo,
+                'nagashiVotingRecord' => $nagashiVotingRecord,
+                'howToBuyMst' => $howToBuyMst, // 識別（単勝、複勝、etc）
                 'howToNagashi'    => $request->input('how_to_nagashi'), // 流し方（軸1頭 or 軸2頭）
                 'shaft'           => $request->input('shaft'), // 軸
                 'partner'         => $request->input('partner'), // 相手
                 'votingAmountNagashi' => $request->input('voting_amount_nagashi'), // 掛け金
             ];
 
-            // まずParamのエラーチェック
             if ($this->votingRecordGeneral->checkNagashiData($formatParams)) {
-                // 問題なければ整形作業をして、インサート用配列のリストを受け取る
+                // インサート用配列のリストを受け取る
                 $paramsForInsertList = $this->votingRecordGeneral->formatNagashiData($formatParams);
             } else {
-                // もしフォーマットエラーだった場合
                 return redirect()->route('voting_record.createSpecialMethod')->with('erroe', '形式に問題があります');
             }
         }
         else if ($howToVote === 'boxTemplate') {
-            // ボックス用の処理を行う
+            $howToBuyMst = $howToBuyMstService->getHowToBuyMst($request->input('how_to_buy_box'));
+
+            // 先にbox_voting_recordにはデータは作っておく
+            $boxVotingRecord = $this->boxVotingRecordService->createBoxVotingRecord([
+                'raceInfo' => $raceInfo,
+                'howToBuyMst' => $howToBuyMst,
+                'votingUmaBanBox' => $request->input('voting_uma_ban_box'),
+                'votingAmountBox' => $request->input('voting_amount_box'),
+                'createdAt' => new DateTime(date('Y-m-d H:i:s')),
+                'updatedAt' => new DateTime(date('Y-m-d H:i:s')),
+            ]);
+
+            // ボックス用のフォーマット処理を行う
             $formatParams = [
-                'raceInfoId'      => $raceInfo->getId(),
-                'howToBuyBox'     => $request->input('how_to_buy_box'), // 識別（単勝、複勝、etc）
+                'raceInfo'        => $raceInfo,
+                'boxVotingRecord' => $boxVotingRecord,
+                'howToBuyMst' => $howToBuyMst, // 識別（単勝、複勝、etc）
                 'votingUmaBanBox' => $request->input('voting_uma_ban_box'), // 対象馬
                 'votingAmountBox' => $request->input('voting_amount_box'), // 掛け金
             ];
 
-            // まずParamのエラーチェック
             if ($this->votingRecordGeneral->checkBoxData($formatParams)) {
-                // 問題なければ整形作業をして、インサート用配列のリストを受け取る
+                // インサート用配列のリストを受け取る
                 $paramsForInsertList = $this->votingRecordGeneral->formatBoxData($formatParams);
             } else {
-                // もしフォーマットエラーだった場合
                 return redirect()->route('voting_record.createSpecialMethod')->with('erroe', '形式に問題があります');
             }
+
         }
         else if ($howToVote === 'formationTemplate') {
-            // フォーメーション用の処理を行う
+            $howToBuyMst = $howToBuyMstService->getHowToBuyMst($request->input('how_to_buy_formaation'));
+            
+            // 先にformation_voting_recordにはデータは作っておく
+            $formationVotingRecord =  $this->formationVotingRecordService->createFormationVotingRecord([
+                'raceInfo' => $raceInfo,
+                'howToBuyMst' => $howToBuyMst,
+                'votingUmaBan1' => $request->input('voting_uma_ban_1_formaation'),
+                'votingUmaBan2' => $request->input('voting_uma_ban_2_formaation'),
+                'votingUmaBan3' => $request->input('voting_uma_ban_3_formaation'),
+                'votingAmountFormation' => $request->input('voting_amount_formaation'),
+                'createdAt' => new DateTime(date('Y-m-d H:i:s')),
+                'updatedAt' => new DateTime(date('Y-m-d H:i:s')),
+            ]);
+
+            // フォーメーション用のフォーマット処理を行う
             $formatParams = [
-                'raceInfoId'            => $raceInfo->getId(),
-                'howToBuyFormation'     => $request->input('how_to_buy_formaation'), // 識別（単勝、複勝、etc）
+                'raceInfo'            => $raceInfo,
+                'formationVotingRecord' => $formationVotingRecord,
+                'howToBuyMst' => $howToBuyMst, // 識別（単勝、複勝、etc）
                 'votingUmaBan1'         => $request->input('voting_uma_ban_1_formaation'), /// フォーメーションの1着
                 'votingUmaBan2'         => $request->input('voting_uma_ban_2_formaation'), /// フォーメーションの2着
                 'votingUmaBan3'         => $request->input('voting_uma_ban_3_formaation'), /// フォーメーションの3着
                 'votingAmountFormation' => $request->input('voting_amount_formaation'), // 掛け金
             ];
 
-            // まずParamのエラーチェック
             if ($this->votingRecordGeneral->checkFormationData($formatParams)) {
-                // 問題なければ整形作業をして、インサート用配列のリストを受け取る
+                // インサート用配列のリストを受け取る
                 $paramsForInsertList = $this->votingRecordGeneral->formatFormationData($formatParams);
             } else {
-                // もしフォーマットエラーだった場合
                 return redirect()->route('voting_record.createSpecialMethod')->with('erroe', '形式に問題があります');
             }
         }
@@ -299,7 +348,7 @@ class VotingRecordController extends Controller
             return redirect()->route('voting_record.createSpecialMethod')->with('erroe', '投票方式を入力してください');
         }
 
-        // 必要なレコード分、インサート作業を行う
+        // voting_recordインサート作業を行う
         foreach ($paramsForInsertList as $paramsForInsert) {
             $paramsForInsert['race_info_id'] = $raceInfo->getId();
             $this->votingRecordService->createVotingRecord($paramsForInsert);

@@ -3,3 +3,6 @@
 （１）
 ユーザー機能を作成する
 投票レコードにユーザーIDを付与する
+
+（２）
+VotingRecordController.phpのcreateとEditでvotingRecordsIndexViewDataの取得はやめる
