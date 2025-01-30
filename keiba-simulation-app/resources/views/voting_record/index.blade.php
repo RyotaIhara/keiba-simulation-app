@@ -45,27 +45,26 @@
         <tbody>
             @foreach ($votingRecordsIndexViewDatas as $votingRecord)
                 <tr>
-                    <td>{{ $votingRecord->getRaceDate()->format('Y-m-d') }}</td>
+                    <td>{{ $votingRecord['race_date'] }}</td>
                     <td>
-                        {{ $votingRecord->getRacecourseName() }}
-                        ({{ $votingRecord->getRaceNum() }}R)
+                        {{ $votingRecord['racecourse_name'] }}
+                        ({{ $votingRecord['race_num'] }}R)
                     </td>
-                    <td>{{ $votingRecord->getRaceName() }}</td>
-                    <td>{{ $votingRecord->getHowToBuyName() }}</td>
-                    <td>{{ $votingRecord->getVotingUmaBan() }}</td>
-                    <td>{{ $votingRecord->getVotingAmount() }}</td>
-                    <td>{{ $votingRecord->getRefundAmount() }}</td>
-                    <td>{{$votingRecord->getHitStatus()}}</td>
+                    <td>{{ $votingRecord['race_name'] }}</td>
+                    <td>{{ $votingRecord['how_to_buy_mst_id'] }}</td>
+                    <td>{{ $votingRecord['voting_uma_ban'] }}</td>
+                    <td>{{ $votingRecord['voting_amount'] }}</td>
+                    <td>{{ $votingRecord['refund_amount'] }}</td>
                     <td>
-                        @if ($votingRecord->getHitStatus() == "1") 的中
-                        @elseif ($votingRecord->getHitStatus() == "2") ×
+                        @if ($votingRecord['hit_status'] == "1") 的中
+                        @elseif ($votingRecord['hit_status'] == "2") ×
                         @else 未確定
                         @endif
                     </td>
                     <td>
-                        <a href="{{ route('voting_record.copy', $votingRecord->getVotingRecordId()) }}" class="btn btn-info">複製</a>
-                        <a href="{{ route('voting_record.edit', $votingRecord->getVotingRecordId()) }}" class="btn btn-warning">修正する</a>
-                        <form action="{{ route('voting_record.destroy', $votingRecord->getVotingRecordId()) }}" method="POST" style="display:inline;">
+                        <a href="{{ route('voting_record.copy', $votingRecord['id']) }}" class="btn btn-info">複製</a>
+                        <a href="{{ route('voting_record.edit', $votingRecord['id']) }}" class="btn btn-warning">修正する</a>
+                        <form action="{{ route('voting_record.destroy', $votingRecord['id']) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">削除する</button>

@@ -14,7 +14,6 @@ use App\Services\Crud\RaceInfoService;
 use App\Services\Crud\HowToBuyMstService;
 use App\Services\Crud\RacecourseMstService;
 use App\Services\General\VotingRecordGeneral;
-use App\Services\View\VotingRecordsIndexViewService;
 use Illuminate\Http\Request;
 use DateTime;
 
@@ -24,7 +23,6 @@ class VotingRecordController extends Controller
     private $boxVotingRecordService;
     private $formationVotingRecordService;
     private $nagashiVotingRecordService;
-    private $votingRecordsIndexViewService;
     private $raceScheduleService;
     private $howToBuyMstService;
     private $raceInfoService;
@@ -40,7 +38,6 @@ class VotingRecordController extends Controller
         $this->boxVotingRecordService = app(BoxVotingRecordService::class);
         $this->formationVotingRecordService = app(FormationVotingRecordService::class);
         $this->nagashiVotingRecordService = app(NagashiVotingRecordService::class);
-        $this->votingRecordsIndexViewService = app(VotingRecordsIndexViewService::class);
         $this->raceScheduleService = app(RaceScheduleService::class);
         $this->howToBuyMstService = app(HowToBuyMstService::class);
         $this->raceInfoService = app(RaceInfoService::class);
@@ -70,7 +67,12 @@ class VotingRecordController extends Controller
             'raceNum' => $raceNum,
             'racecourse' => $racecourse
         ];
-        $tmpResult = $this->votingRecordsIndexViewService->getAllVotingRecordsIndexViewDatas($page, $pageSize, $searchForm);
+        $tmpResult = $this->votingRecordService->getVotingRecordsIndexViewDatas($page, $pageSize, $searchForm);
+
+        foreach ($tmpResult['data'] as $data) {
+            //var_dump($data);
+            //exit;
+        }
 
         return view('voting_record.index', [
             'votingRecordsIndexViewDatas' => $tmpResult['data'],

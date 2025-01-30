@@ -20,6 +20,17 @@ class VotingRecordService extends CrudBase
         return $this->entityManager->getRepository(VotingRecord::class)->getAllRacecourseMsts();
     }
 
+    /** 画面の一覧表示用にvoting_recordテーブルのデータを取得する **/
+    public function getVotingRecordsIndexViewDatas($page, $pageSize, $searchForm)
+    {
+        $whereParams = [
+            'raceDate' => $searchForm['raceDate'],
+            'raceNum' => $searchForm['raceNum'],
+            'jyoCd' => $searchForm['racecourse']
+        ];
+        return $this->entityManager->getRepository(VotingRecord::class)->getVotingRecordsIndexViewDatas($page, $pageSize, $whereParams);
+    }
+
     /** IDからvoting_recordテーブルのデータを取得する **/
     public function getVotingRecord($id)
     {
