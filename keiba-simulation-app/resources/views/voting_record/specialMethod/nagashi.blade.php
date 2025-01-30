@@ -1,13 +1,4 @@
 <div class="form-group">
-    <label for="how_to_buy_nagashi">買い方を選択</label>
-    <select name="how_to_buy_nagashi" id="how_to_buy_nagashi" class="form-control">
-        @foreach ($howToBuyMstDatas as $howToBuyMstData)
-            <option value="{{ $howToBuyMstData->getId() }}" @if ($howToBuyMstData->getId() == $votingRecordsIndexViewData->getHowToBuyMstId()) selected @endif>{{ $howToBuyMstData->getHowToBuyName() }}</option>
-        @endforeach
-    </select>
-</div>
-
-<div class="form-group">
     <label for="how_to_nagashi">流し方</label><br>
     <input type="radio" name="how_to_nagashi" id="single_shaft" value="1" checked>
     <label for="single_shaft">軸1頭</label><br>

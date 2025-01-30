@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Entities\VotingRecordsIndexView;
+use App\Entities\VotingRecord;
 use App\Services\Crud\VotingRecordService;
 use App\Services\Crud\BoxVotingRecordService;
 use App\Services\Crud\FormationVotingRecordService;
@@ -56,8 +56,8 @@ class VotingRecordController extends Controller
 
         // 検索項目としてわたってくるパラメータ
         $raceDate = $request->query('race_date', date('Y-m-d'));
-        $raceNum =$request->query('racecourse_mst', NULL);
-        $racecourse = $request->query('race_num', NULL);
+        $raceNum =$request->query('race_num', NULL);
+        $racecourse = $request->query('racecourse_mst', NULL);
 
         // 検索項目でレース場一覧の取得が必要な箇所があるので対応
         $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst([
@@ -134,14 +134,13 @@ class VotingRecordController extends Controller
         $raceNumDatas = self::RACE_NUM_DATAS;
 
         // テンプレに渡す項目
-        $votingRecordsIndexViewData = new VotingRecordsIndexView();
         $params = [
             'subTitle' => '新規作成',
             'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
             'howToBuyMstDatas' => $howToBuyMstDatas,
             'raceNumDatas' => $raceNumDatas,
             'raceDate' => $raceDate,
-            'votingRecordsIndexViewData' => $votingRecordsIndexViewData
+            'votingRecord' => new VotingRecord(),
         ];
 
         return view('voting_record.create', $params);
@@ -161,14 +160,13 @@ class VotingRecordController extends Controller
         $raceNumDatas = self::RACE_NUM_DATAS;
 
         // テンプレに渡す項目
-        $votingRecordsIndexViewData = new VotingRecordsIndexView();
         $params = [
             'subTitle' => '新規作成',
             'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
             'howToBuyMstDatas' => $howToBuyMstDatas,
             'raceNumDatas' => $raceNumDatas,
             'raceDate' => $raceDate,
-            'votingRecordsIndexViewData' => $votingRecordsIndexViewData
+            'votingRecord' =>  new VotingRecord(),
         ];
 
         return view('voting_record.specialMethod.createSpecialMethod', $params);
@@ -178,11 +176,8 @@ class VotingRecordController extends Controller
     public function copy(string $id)
     {
         // 投票する対象日とコピー元の投票データを取得
-        $votingRecordsIndexViewData = $this->votingRecordsIndexViewService->getVotingRecordsIndexViewData($id);
-        $raceDate = $votingRecordsIndexViewData->getRaceDate()->format('Y-m-d');
-
-        // 買い目だけリセット
-        $votingRecordsIndexViewData->setVotingUmaBan("");
+        $votingRecord = $this->votingRecordService->getVotingRecord($id);
+        $raceDate = $votingRecord->getRaceInfo()->getRaceDate()->format('Y-m-d');
 
         // フォーム項目でレース場一覧とレース数の取得が必要な箇所があるので対応
         $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst([
@@ -198,11 +193,39 @@ class VotingRecordController extends Controller
             'howToBuyMstDatas' => $howToBuyMstDatas,
             'raceNumDatas' => $raceNumDatas,
             'raceDate' => $raceDate,
-            'votingRecordsIndexViewData' => $votingRecordsIndexViewData
+            'votingRecord' => $votingRecord
         ];
 
         return view('voting_record.create', $params);
     }
+
+    /* 既存データの修正（テンプレ呼び出し） */
+    public function edit(string $id)
+    {
+        // 投票する対象日と編集元の投票データを取得
+        $votingRecord = $this->votingRecordService->getVotingRecord($id);
+        $raceDate = $votingRecord->getRaceInfo()->getRaceDate()->format('Y-m-d');
+
+        // フォーム項目でレース場一覧とレース数の取得が必要な箇所があるので対応
+        $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst([
+            'raceDate' => $raceDate
+        ]);
+        $howToBuyMstDatas = $this->howToBuyMstService->getAllHowToBuyMsts();
+        $raceNumDatas = self::RACE_NUM_DATAS;
+
+        // テンプレに渡す項目
+        $params = [
+            'subTitle' => '編集',
+            'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
+            'howToBuyMstDatas' => $howToBuyMstDatas,
+            'raceNumDatas' => $raceNumDatas,
+            'raceDate' => $raceDate,
+            'votingRecord' => $votingRecord
+        ];
+
+        return view('voting_record.edit', $params);
+    }
+
 
     /** 通常方式でのデータ作成（store） **/
     public function store(Request $request, EntityManagerInterface $entityManager)
@@ -266,6 +289,7 @@ class VotingRecordController extends Controller
         // 投票方式に応じてインサートするパラメータをフォーマットする
         $howToVote = $request->input('how_to_vote');
         $paramsForInsertList = [];
+        $howToBuyMst = $howToBuyMstService->getHowToBuyMst($request->input('how_to_buy')); // 識別（単勝、複勝、etc）
 
         if ($howToVote === 'nagashiTemplate') {
             // 必要な変数を取得
@@ -273,7 +297,7 @@ class VotingRecordController extends Controller
             $shaft = $request->input('shaft'); // 軸
             $partner = $request->input('partner'); // 相手
             $votingAmountNagashi = $request->input('voting_amount_nagashi'); // 掛け金
-            $howToBuyMst = $howToBuyMstService->getHowToBuyMst($request->input('how_to_buy_nagashi')); // 識別（単勝、複勝、etc）
+            
 
             // 先にnagashi_voting_recordにはデータは作っておく
             $nagashiVotingRecord = $this->nagashiVotingRecordService->createNagashiVotingRecord([
@@ -308,7 +332,6 @@ class VotingRecordController extends Controller
             // 必要な変数を取得
             $votingUmaBanBox = $request->input('voting_uma_ban_box'); // 対象馬
             $votingAmountBox = $request->input('voting_amount_box'); // 掛け金
-            $howToBuyMst = $howToBuyMstService->getHowToBuyMst($request->input('how_to_buy_box')); // 識別（単勝、複勝、etc）
 
             // 先にbox_voting_recordにはデータは作っておく
             $boxVotingRecord = $this->boxVotingRecordService->createBoxVotingRecord([
@@ -342,7 +365,6 @@ class VotingRecordController extends Controller
             $votingUmaBan2 = $request->input('voting_uma_ban_2_formaation'); // フォーメーションの2着
             $votingUmaBan3 = $request->input('voting_uma_ban_3_formaation'); // フォーメーションの3着
             $votingAmountFormation = $request->input('voting_amount_formaation'); // 掛け金
-            $howToBuyMst = $howToBuyMstService->getHowToBuyMst($request->input('how_to_buy_formaation')); // 識別（単勝、複勝、etc）
 
             // 先にformation_voting_recordにはデータは作っておく
             $formationVotingRecord =  $this->formationVotingRecordService->createFormationVotingRecord([
@@ -394,33 +416,6 @@ class VotingRecordController extends Controller
     public function show(string $id)
     {
         // 一旦今回は使用しない
-    }
-
-    /* 既存データの修正（テンプレ呼び出し） */
-    public function edit(string $id)
-    {
-        // 投票する対象日と編集元の投票データを取得
-        $votingRecordsIndexViewData = $this->votingRecordsIndexViewService->getVotingRecordsIndexViewData($id);
-        $raceDate = $votingRecordsIndexViewData->getRaceDate()->format('Y-m-d');
-
-        // フォーム項目でレース場一覧とレース数の取得が必要な箇所があるので対応
-        $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst([
-            'raceDate' => $raceDate
-        ]);
-        $howToBuyMstDatas = $this->howToBuyMstService->getAllHowToBuyMsts();
-        $raceNumDatas = self::RACE_NUM_DATAS;
-
-        // テンプレに渡す項目
-        $params = [
-            'subTitle' => '編集',
-            'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
-            'howToBuyMstDatas' => $howToBuyMstDatas,
-            'raceNumDatas' => $raceNumDatas,
-            'raceDate' => $raceDate,
-            'votingRecordsIndexViewData' => $votingRecordsIndexViewData
-        ];
-
-        return view('voting_record.edit', $params);
     }
 
     /* 既存データの修正（実行） */

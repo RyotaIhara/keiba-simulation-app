@@ -17,13 +17,13 @@ class VotingRecordsIndexView
     private int $raceInfoId;
 
     #[ORM\Column(type: "integer", name: "how_to_buy_mst_id")]
-    private int $howToBuyMstId = 0;
+    private int $howToBuyMstId;
 
     #[ORM\Column(type: "string", name: "voting_uma_ban")]
-    private string $votingUmaBan = "";
+    private string $votingUmaBan;
 
     #[ORM\Column(type: "integer", name: "voting_amount")]
-    private int $votingAmount = 0;
+    private int $votingAmount;
 
     #[ORM\Column(type: "integer", name: "refund_amount")]
     private int $refundAmount;
@@ -38,7 +38,7 @@ class VotingRecordsIndexView
     private \DateTime $raceDate;
 
     #[ORM\Column(type: "integer", name: "race_num")]
-    private int $raceNum = 0;
+    private int $raceNum;
 
     #[ORM\Column(type: "string", name: "race_name")]
     private string $raceName;
@@ -47,7 +47,7 @@ class VotingRecordsIndexView
     private int $entryHorseCount;
 
     #[ORM\Column(type: "string", name: "jyo_cd")]
-    private string $jyoCd = "";
+    private string $jyoCd;
 
     #[ORM\Column(type: "string", name: "how_to_buy_name")]
     private string $howToBuyName;

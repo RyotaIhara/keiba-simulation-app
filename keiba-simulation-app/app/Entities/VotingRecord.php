@@ -22,17 +22,17 @@ class VotingRecord
 
     #[ORM\ManyToOne(targetEntity: "App\Entities\RaceInfo")]
     #[ORM\JoinColumn(name: "race_info_id", referencedColumnName: "id", nullable: false)]
-    private RaceInfo $raceInfo;
+    private ?RaceInfo $raceInfo = null;
 
     #[ORM\ManyToOne(targetEntity: "App\Entities\HowToBuyMst")]
     #[ORM\JoinColumn(name: "how_to_buy_mst_id", referencedColumnName: "id", nullable: false)]
-    private HowToBuyMst $howToBuyMst;
+    private ?HowToBuyMst $howToBuyMst = null;
 
     #[ORM\Column(type: "string", length: 50, name: "voting_uma_ban")]
-    private string $votingUmaBan;
+    private ?string $votingUmaBan = null;
 
     #[ORM\Column(type: "integer", name: "voting_amount")]
-    private int $votingAmount;
+    private ?int $votingAmount = null;
 
     #[ORM\Column(type: "integer", name: "refund_amount")]
     private int $refundAmount = self::DEFALT_REFUND_AMOUNT;
@@ -74,7 +74,7 @@ class VotingRecord
         $this->user = $user;
     }
 
-    public function getRaceInfo(): RaceInfo 
+    public function getRaceInfo(): ?RaceInfo 
     {
         return $this->raceInfo;
     }
@@ -84,7 +84,7 @@ class VotingRecord
         $this->raceInfo = $raceInfo;
     }
 
-    public function getHowToBuyMst(): HowToBuyMst
+    public function getHowToBuyMst(): ?HowToBuyMst
     {
         return $this->howToBuyMst;
     }
@@ -94,7 +94,7 @@ class VotingRecord
         $this->howToBuyMst = $howToBuyMst;
     }
 
-    public function getVotingUmaBan(): string
+    public function getVotingUmaBan(): ?string
     {
         return $this->votingUmaBan;
     }
@@ -104,7 +104,7 @@ class VotingRecord
         $this->votingUmaBan = $votingUmaBan;
     }
 
-    public function getVotingAmount(): int
+    public function getVotingAmount(): ?int
     {
         return $this->votingAmount;
     }
@@ -114,7 +114,7 @@ class VotingRecord
         $this->votingAmount = $votingAmount;
     }
 
-    public function getRefundAmount(): int
+    public function getRefundAmount(): ?int
     {
         return $this->refundAmount;
     }

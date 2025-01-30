@@ -5,8 +5,6 @@ namespace App\Services\Crud;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entities\VotingRecord;
 use App\Services\Crud\CrudBase;
-use App\Services\Crud\RaceInfoService;
-use App\Services\Crud\HowToBuyMstService;
 use App\Services\General\AuthGeneral;
 
 class VotingRecordService extends CrudBase
