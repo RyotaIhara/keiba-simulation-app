@@ -3,7 +3,6 @@
 namespace App\Services\General;
 
 use App\Services\General\GeneralBase;
-use DateTime;
 
 class VotingRecordGeneral extends GeneralBase
 {
@@ -11,27 +10,20 @@ class VotingRecordGeneral extends GeneralBase
     public function formatNagashiData($formatParams) {
         $paramsForInsertList = [];
 
-        $raceInfo     = $formatParams['raceInfo'];
         $nagashiVotingRecord = $formatParams['nagashiVotingRecord'];
-        $howToBuy     = $formatParams['howToBuyMst']; // 識別（単勝、複勝、etc）
+        $howToBuyMstId     = $formatParams['howToBuyMstId']; // 識別（単勝、複勝、etc）
         //$howToNagashi = $formatParams['howToNagashi']; // 流し方（軸1頭 or 軸2頭）
         $shaft        = $formatParams['shaft']; // 軸
         $partner      = $formatParams['partner']; // 相手
         $votingAmount = $formatParams['votingAmountNagashi']; // 掛け金
 
-        $howToBuyId = $howToBuy->getId();
-
         $tmpParamsForInsert = array(
-            'race_info'         => $raceInfo,
-            'how_to_buy_mst' => $howToBuy,
             'nagashi_voting_record' => $nagashiVotingRecord,
-            'voting_amount'     => $votingAmount,
-            'refund_amount'     => 0,
-            'created_at'        => new DateTime(date('Y-m-d H:i:s')),
-            'updated_at'        => new DateTime(date('Y-m-d H:i:s'))
+            'voting_amount'         => $votingAmount,
+            'refund_amount'         => 0,
         );
 
-        if (in_array($howToBuyId, ['4','5','7'] )) {
+        if (in_array($howToBuyMstId, ['4','5','7'] )) {
             // 馬連 or 馬単 or ワイド
             $partnerList = explode(',', $partner);
             foreach ($partnerList as $partnerNum) {
@@ -40,11 +32,11 @@ class VotingRecordGeneral extends GeneralBase
                 $paramsForInsertList[] = $tmpParamsForInsert;
             }
         }
-        else if (in_array($howToBuyId, ['8'] )) {
+        else if (in_array($howToBuyMstId, ['8'] )) {
             // 3連複
             // 一旦使わないので実装なし
         }
-        else if (in_array($howToBuyId, ['9'] )) {
+        else if (in_array($howToBuyMstId, ['9'] )) {
             // 3連単
             // 一旦使わないので実装なし
         }
@@ -66,25 +58,18 @@ class VotingRecordGeneral extends GeneralBase
     public function formatBoxData($formatParams) {
         $paramsForInsertList = [];
 
-        $raceInfo        = $formatParams['raceInfo'];
-        $boxVotingRecord        = $formatParams['boxVotingRecord'];
-        $howToBuy        = $formatParams['howToBuyMst']; // 識別（単勝、複勝、etc）
+        $boxVotingRecord = $formatParams['boxVotingRecord'];
+        $howToBuyMstId      = $formatParams['howToBuyMstId']; // 識別（単勝、複勝、etc）
         $votingUmaBanBox = $formatParams['votingUmaBanBox']; // 対象馬
         $votingAmount    = $formatParams['votingAmountBox']; // 掛け金
 
-        $howToBuyId = $howToBuy->getId();
-
         $tmpParamsForInsert = array(
-            'race_info'         => $raceInfo,
-            'how_to_buy_mst' => $howToBuy,
             'boxVotingRecord' => $boxVotingRecord,
-            'voting_amount'     => $votingAmount,
-            'refund_amount'     => 0,
-            'created_at'        => new DateTime(date('Y-m-d H:i:s')),
-            'updated_at'        => new DateTime(date('Y-m-d H:i:s'))
+            'votingAmount'    => $votingAmount,
+            'refundAmount'    => 0,
         );
 
-        if (in_array($howToBuyId, ['4','5'] )) {
+        if (in_array($howToBuyMstId, ['4','5'] )) {
             // 馬連 or ワイド
             $votingUmaBanList = explode(',', $votingUmaBanBox);
             for ($i = 0; $i < count($votingUmaBanList); $i++) {
@@ -97,7 +82,7 @@ class VotingRecordGeneral extends GeneralBase
                 }
             }
         }
-        if (in_array($howToBuyId, ['7'] )) {
+        if (in_array($howToBuyMstId, ['7'] )) {
             // 馬単
             $votingUmaBanList = explode(',', $votingUmaBanBox);
             foreach ($votingUmaBanList as $i) {
@@ -110,7 +95,7 @@ class VotingRecordGeneral extends GeneralBase
                 }
             }
         }
-        else if (in_array($howToBuyId, ['8'] )) {
+        else if (in_array($howToBuyMstId, ['8'] )) {
             // 3連複
             $votingUmaBanList = explode(',', $votingUmaBanBox);
             for ($i = 0; $i < count($votingUmaBanList); $i++) {
@@ -123,7 +108,7 @@ class VotingRecordGeneral extends GeneralBase
                 }
             }
         }
-        else if (in_array($howToBuyId, ['9'] )) {
+        else if (in_array($howToBuyMstId, ['9'] )) {
             // 3連単
             $votingUmaBanList = explode(',', $votingUmaBanBox);
             foreach ($votingUmaBanList as $i) {
@@ -156,27 +141,20 @@ class VotingRecordGeneral extends GeneralBase
     public function formatFormationData($formatParams) {
         $paramsForInsertList = [];
 
-        $raceInfo      = $formatParams['raceInfo'];
-        $formationVotingRecord        = $formatParams['formationVotingRecord'];
-        $howToBuy      = $formatParams['howToBuyMst']; // 識別（単勝、複勝、etc）
+        $formationVotingRecord = $formatParams['formationVotingRecord'];
+        $howToBuyMstId    = $formatParams['howToBuyMstId']; // 識別（単勝、複勝、etc）
         $votingUmaBan1 = $formatParams['votingUmaBan1']; // フォーメーションの1着
         $votingUmaBan2 = $formatParams['votingUmaBan2']; // フォーメーションの2着
         $votingUmaBan3 = $formatParams['votingUmaBan3']; // フォーメーションの3着
         $votingAmount  = $formatParams['votingAmountFormation']; // 掛け金
 
-        $howToBuyId = $howToBuy->getId();
-
         $tmpParamsForInsert = array(
-            'race_info'         => $raceInfo,
-            'how_to_buy_mst' => $howToBuy,
             'formationVotingRecord' => $formationVotingRecord,
-            'voting_amount'     => $votingAmount,
-            'refund_amount'     => 0,
-            'created_at'        => new DateTime(date('Y-m-d H:i:s')),
-            'updated_at'        => new DateTime(date('Y-m-d H:i:s'))
+            'votingAmount'          => $votingAmount,
+            'refundAmount'          => 0,
         );
 
-        if (in_array($howToBuyId, ['4','5','7'] )) {
+        if (in_array($howToBuyMstId, ['4','5','7'] )) {
             // 馬連 or 馬単 or ワイド
             $votingUmaBanList_1 = explode(',', $votingUmaBan1);
             $votingUmaBanList_2 = explode(',', $votingUmaBan2);
@@ -190,7 +168,7 @@ class VotingRecordGeneral extends GeneralBase
                 }
             }
         }
-        else if (in_array($howToBuyId, ['8', '9'] )) {
+        else if (in_array($howToBuyMstId, ['8', '9'] )) {
             // 3連複 or 3連単
             $votingUmaBanList_1 = explode(',', $votingUmaBan1);
             $votingUmaBanList_2 = explode(',', $votingUmaBan2);
