@@ -35,7 +35,8 @@ class RaceInfoService extends CrudBase
     {
         $raceInfo = new RaceInfo();
 
-        $raceInfo = $this->setRaceInfo($raceInfo, $data);
+        $updateFlag = False;
+        $raceInfo = $this->setRaceInfo($raceInfo, $data, $updateFlag);
 
         $this->entityManager->persist($raceInfo);
         $this->entityManager->flush();
@@ -48,7 +49,8 @@ class RaceInfoService extends CrudBase
         $raceInfoRepository = $this->entityManager->getRepository(RaceInfo::class);
         $raceInfo = $raceInfoRepository->find($id);
 
-        $raceInfo = $this->setRaceInfo($raceInfo, $data);
+        $updateFlag = True;
+        $raceInfo = $this->setRaceInfo($raceInfo, $data, $updateFlag);
 
         $this->entityManager->persist($raceInfo);
         $this->entityManager->flush();
@@ -67,7 +69,7 @@ class RaceInfoService extends CrudBase
     }
 
     /** createやupdate用にデータをセットする **/
-    private function setRaceInfo($raceInfo, $data)
+    private function setRaceInfo($raceInfo, $data, $updateFlag)
     {
         $raceInfo->setRaceDate($this->getValue($data, 'race_date', 'raceDate'));
         $raceInfo->setJyoCd($this->getValue($data, 'jyo_cd', 'jyoCd'));
@@ -79,6 +81,11 @@ class RaceInfoService extends CrudBase
         $raceInfo->setRotation($this->getValue($data, 'rotation', 'rotation'));
         $raceInfo->setWeather($this->getValue($data, 'weather', 'weather'));
         $raceInfo->setBabaState($this->getValue($data, 'baba_state', 'babaState'));
+
+        if (!$updateFlag) {
+            $raceInfo->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
+        }
+        $raceInfo->setUpdatedAt(new \DateTime(date('Y-m-d H:i:s')));
 
         return $raceInfo;
     }

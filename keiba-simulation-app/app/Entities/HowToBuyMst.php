@@ -19,9 +19,6 @@ class HowToBuyMst
     #[ORM\Column(type: "string", length: 11, name: "how_to_buy_name")]
     private string $howToBuyName;
 
-    #[ORM\Column(type: "boolean", name: "is_ordered")]
-    private bool $isOrdered;
-
     public function getId(): int
     {
         return $this->id;
@@ -45,15 +42,5 @@ class HowToBuyMst
     public function setHowToBuyName(string $howToBuyName): void
     {
         $this->howToBuyName = $howToBuyName;
-    }
-
-    public function getIsOrdered(): bool
-    {
-        return $this->isOrdered;
-    }
-
-    public function setIsOrdered(bool $isOrdered): void
-    {
-        $this->isOrdered = $isOrdered;
     }
 }

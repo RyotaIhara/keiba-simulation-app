@@ -36,7 +36,8 @@ class RaceCardService extends CrudBase
     {
         $raceCard = new RaceCard();
 
-        $raceCard = $this->setRaceCard($raceCard, $data);
+        $updateFlag = False;
+        $raceCard = $this->setRaceCard($raceCard, $data, $updateFlag);
 
         $this->entityManager->persist($raceCard);
         $this->entityManager->flush();
@@ -45,11 +46,12 @@ class RaceCardService extends CrudBase
 
     /** race_cardのデータを更新する **/
     public function updateRaceCard($id, array $data)
-    {
+    { 
         $raceCardRepository = $this->entityManager->getRepository(RaceCard::class);
         $raceCard = $raceCardRepository->find($id);
 
-        $raceCard = $this->setRaceCard($raceCard, $data);
+        $updateFlag = True;
+        $raceCard = $this->setRaceCard($raceCard, $data, $updateFlag);
 
         $this->entityManager->persist($raceCard);
         $this->entityManager->flush();
@@ -68,7 +70,7 @@ class RaceCardService extends CrudBase
     }
 
     /** createやupdate用にデータをセットする **/
-    private function setRaceCard($raceCard, $data)
+    private function setRaceCard($raceCard, $data, $updateFlag)
     {
         $raceInfoService = app(RaceInfoService::class);
         $raceInfo = $raceInfoService->getRaceInfo($this->getValue($data, 'race_info_id', 'raceInfoId'));
@@ -77,16 +79,21 @@ class RaceCardService extends CrudBase
         $raceCard->setWakuBan($this->getValue($data, 'waku_ban', 'wakuBan'));
         $raceCard->setUmaBan($this->getValue($data, 'uma_ban', 'umaBan'));
         $raceCard->setHorseName($this->getValue($data, 'horse_name', 'horseName'));
-        $raceCard->setAge($this->getValue($data, 'age', 'age'));
+        $raceCard->setSexAge($this->getValue($data, 'sex_age', 'sexAge'));
         $raceCard->setWeight($this->getValue($data, 'weight', 'weight'));
         $raceCard->setJockeyName($this->getValue($data, 'jockey_name', 'jockeyName'));
         $raceCard->setFavourite($this->getValue($data, 'favourite', 'favourite'));
         $raceCard->setWinOdds($this->getValue($data, 'win_odds', 'winOdds'));
-        $raceCard->setStable($this->getValue($data, 'stable', 'stable'));
+        $raceCard->setTrainer($this->getValue($data, 'trainer', 'trainer'));
         if (is_numeric($this->getValue($data, 'weight_gain_loss', 'weightGainLoss'))) {
             $raceCard->setWeightGainLoss($this->getValue($data, 'weight_gain_loss', 'weightGainLoss'));
         } 
         $raceCard->setIsCancel($this->getValue($data, 'is_cancel', 'isCancel'));
+
+        if (!$updateFlag) {
+            $raceInfo->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
+        }
+        $raceInfo->setUpdatedAt(new \DateTime(date('Y-m-d H:i:s')));
 
         return $raceCard;
     }

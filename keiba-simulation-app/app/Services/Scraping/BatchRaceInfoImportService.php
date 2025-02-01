@@ -54,9 +54,9 @@ class BatchRaceInfoImportService extends ScrapingBase
                 $wakuBan = $parentRow->filter('td[class^="Waku"]')->text('');
                 $umaBan = $parentRow->filter('td[class^="Umaban"]')->text('');
                 $horseName = $parentRow->filter('td.HorseInfo span.HorseName a')->text('');
-                $age = $parentRow->filter('td')->eq(1)->text('');
+                $sexAge = $parentRow->filter('td')->eq(1)->text('');
                 $jockey = $parentRow->filter('td.Jockey a')->text('');
-                $stable = $parentRow->filter('td.Trainer')->text('');
+                $trainer = $parentRow->filter('td.Trainer')->text('');
 
                 $weight = NULL;
                 $weightGainLoss = NULL;
@@ -82,12 +82,12 @@ class BatchRaceInfoImportService extends ScrapingBase
                     'waku_ban' => $wakuBan,
                     'uma_ban' => $umaBan,
                     'horse_name' => $horseName,
-                    'age' => $age,
+                    'sex_age' => $sexAge,
                     'weight' => $weight,
                     'jockey_name' => $jockey,
                     'favourite' => $favourite,
                     'win_odds' => $winOdds,
-                    'stable' => $stable,
+                    'trainer' => $trainer,
                     'weight_gain_loss' => $weightGainLoss,
                     'is_cancel' => $isCancel
                 ];

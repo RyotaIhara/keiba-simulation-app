@@ -56,10 +56,10 @@ class VotingRecordRepository extends EntityRepository
                 `voting_record`.`id` AS `id`,
                 `voting_record`.`race_info_id` AS `race_info_id`,
                 `voting_record`.`how_to_buy_mst_id` AS `how_to_buy_mst_id`,
-                `voting_record`.`voting_uma_ban` AS `voting_uma_ban`,
-                `voting_record`.`voting_amount` AS `voting_amount`,
-                `voting_record`.`refund_amount` AS `refund_amount`,
-                `voting_record`.`hit_status` AS `hit_status`,
+                `voting_record_detail`.`voting_uma_ban` AS `voting_uma_ban`,
+                `voting_record_detail`.`voting_amount` AS `voting_amount`,
+                `voting_record_detail`.`refund_amount` AS `refund_amount`,
+                `voting_record_detail`.`hit_status` AS `hit_status`,
                 `racecourse_mst`.`racecourse_name` AS `racecourse_name`,
                 `race_info`.`race_date` AS `race_date`,
                 `race_info`.`race_num` AS `race_num`,
@@ -69,6 +69,7 @@ class VotingRecordRepository extends EntityRepository
                 `how_to_buy_mst`.`how_to_buy_name` AS `how_to_buy_name`
             FROM 
                 `voting_record`
+            INNER JOIN `voting_record_detail` ON `voting_record`.`id` = `voting_record_detail`.`voting_record_id`
             INNER JOIN `race_info` ON `race_info`.`id` = `voting_record`.`race_info_id`
             INNER JOIN `how_to_buy_mst` ON `how_to_buy_mst`.`id` = `voting_record`.`how_to_buy_mst_id`
             INNER JOIN `racecourse_mst` ON `racecourse_mst`.`jyo_cd` = `race_info`.`jyo_cd`
@@ -77,11 +78,11 @@ class VotingRecordRepository extends EntityRepository
         ";
 
         if (isset($whereParams['hitStatus']) && !is_null($whereParams['hitStatus'])) {
-            $sql .= " AND vr.hit_status = :hitStatus";
+            $sql .= " AND voting_record_detail.hit_status = :hitStatus";
         }
 
         if (isset($whereParams['jyoCd']) && !is_null($whereParams['jyoCd'])) {
-            $sql .= " AND ri.jyo_cd = :jyoCd";
+            $sql .= " AND race_info.jyo_cd = :jyoCd";
         }
 
         $stmt = $conn->executeQuery($sql, $whereParams);

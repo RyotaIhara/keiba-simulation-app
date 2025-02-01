@@ -69,11 +69,6 @@ class VotingRecordController extends Controller
         ];
         $tmpResult = $this->votingRecordService->getVotingRecordsIndexViewDatas($page, $pageSize, $searchForm);
 
-        foreach ($tmpResult['data'] as $data) {
-            //var_dump($data);
-            //exit;
-        }
-
         return view('voting_record.index', [
             'votingRecordsIndexViewDatas' => $tmpResult['data'],
             'totalItems' => $tmpResult['totalItems'],
@@ -142,7 +137,6 @@ class VotingRecordController extends Controller
             'howToBuyMstDatas' => $howToBuyMstDatas,
             'raceNumDatas' => $raceNumDatas,
             'raceDate' => $raceDate,
-            'votingRecord' => new VotingRecord(),
         ];
 
         return view('voting_record.create', $params);
@@ -168,7 +162,6 @@ class VotingRecordController extends Controller
             'howToBuyMstDatas' => $howToBuyMstDatas,
             'raceNumDatas' => $raceNumDatas,
             'raceDate' => $raceDate,
-            'votingRecord' =>  new VotingRecord(),
         ];
 
         return view('voting_record.specialMethod.createSpecialMethod', $params);

@@ -24,11 +24,6 @@ class BatchRaceScheduleService extends ScrapingBase
             });
 
             foreach ($jyoNames as $jyoName) {
-                // 「帯広ば」だけ特殊なので整形
-                if ($jyoName === '帯広ば') {
-                    $jyoName = '帯広';
-                }
-
                 $racecourseMstService = app(RacecourseMstService::class);
                 $raceScheduleService = app(RaceScheduleService::class);
 

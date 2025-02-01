@@ -17,17 +17,17 @@ class RaceCard
     #[ORM\JoinColumn(name: "race_info_id", referencedColumnName: "id", nullable: false)]
     private RaceInfo $raceInfo;
 
-    #[ORM\Column(type: "integer", name: "waku_ban", nullable: true)]
+    #[ORM\Column(type: "integer", length: 4, name: "waku_ban", nullable: true)]
     private ?int $wakuBan = null;
 
-    #[ORM\Column(type: "integer", name: "uma_ban", nullable: true)]
+    #[ORM\Column(type: "integer", length: 4, name: "uma_ban", nullable: true)]
     private ?int $umaBan = null;
 
     #[ORM\Column(type: "text", name: "horse_name", nullable: true)]
     private ?string $horseName = null;
 
-    #[ORM\Column(type: "string", length: 8, name: "age", nullable: true)]
-    private ?string $age = null;
+    #[ORM\Column(type: "string", length: 8, name: "sex_age", nullable: true)]
+    private ?string $sexAge = null;
 
     #[ORM\Column(type: "float", name: "weight", nullable: true)]
     private ?float $weight = null;
@@ -35,20 +35,26 @@ class RaceCard
     #[ORM\Column(type: "text", name: "jockey_name", nullable: true)]
     private ?string $jockeyName = null;
 
-    #[ORM\Column(type: "integer", name: "favourite", nullable: true)]
+    #[ORM\Column(type: "integer", length: 4, name: "favourite", nullable: true)]
     private ?int $favourite = null;
 
     #[ORM\Column(type: "float", name: "win_odds", nullable: true)]
     private ?float $winOdds = null;
 
-    #[ORM\Column(type: "text", name: "stable", nullable: true)]
-    private ?string $stable = null;
+    #[ORM\Column(type: "string", length: 11, name: "trainer", nullable: true)]
+    private ?string $trainer = null;
 
     #[ORM\Column(type: "float", name: "weight_gain_loss", nullable: true)]
     private ?float $weightGainLoss = null;
 
     #[ORM\Column(type: "boolean", name: "is_cancel", options: ["default" => 0])]
     private bool $isCancel = false;
+
+    #[ORM\Column(type: "datetime", name: "created_at", nullable: true)]
+    private ?\DateTime $createdAt;
+
+    #[ORM\Column(type: "datetime", name: "updated_at", nullable: true)]
+    private ?\DateTime $updatedAt;
 
     public function getId(): int
     {
@@ -95,14 +101,14 @@ class RaceCard
         $this->horseName = $horseName;
     }
 
-    public function getAge(): ?string
+    public function getSexAge(): ?string
     {
-        return $this->age;
+        return $this->sexAge;
     }
 
-    public function setAge(?string $age): void
+    public function setSexAge(?string $sexAge): void
     {
-        $this->age = $age;
+        $this->sexAge = $sexAge;
     }
 
     public function getWeight(): ?float
@@ -145,14 +151,14 @@ class RaceCard
         $this->winOdds = $winOdds;
     }
 
-    public function getStable(): ?string
+    public function getTrainer(): ?string
     {
-        return $this->stable;
+        return $this->trainer;
     }
 
-    public function setStable(?string $stable): void
+    public function setTrainer(?string $trainer): void
     {
-        $this->stable = $stable;
+        $this->trainer = $trainer;
     }
 
     public function getWeightGainLoss(): ?float
@@ -173,5 +179,25 @@ class RaceCard
     public function setIsCancel(bool $isCancel): void
     {
         $this->isCancel = $isCancel;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTime $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTime $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
     }
 }

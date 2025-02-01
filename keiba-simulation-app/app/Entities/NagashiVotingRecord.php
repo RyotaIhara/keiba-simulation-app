@@ -13,17 +13,9 @@ class NagashiVotingRecord
     #[ORM\Column(type: "integer")]
     private int $id;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entities\User")]
-    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id", nullable: false)]
-    private User $user;
-
-    #[ORM\ManyToOne(targetEntity: "App\Entities\RaceInfo")]
-    #[ORM\JoinColumn(name: "race_info_id", referencedColumnName: "id", nullable: false)]
-    private RaceInfo $raceInfo;
-
-    #[ORM\ManyToOne(targetEntity: "App\Entities\HowToBuyMst")]
-    #[ORM\JoinColumn(name: "how_to_buy_mst_id", referencedColumnName: "id", nullable: false)]
-    private HowToBuyMst $howToBuyMst;
+    #[ORM\ManyToOne(targetEntity: "App\Entities\VotingRecord")]
+    #[ORM\JoinColumn(name: "voting_record_id", referencedColumnName: "id", nullable: false)]
+    private VotingRecord $votingRecord;
 
     #[ORM\Column(type: "integer", name: "shaft_pattern")]
     private int $shaftPattern;
@@ -49,34 +41,14 @@ class NagashiVotingRecord
         return $this->id;
     }
 
-    public function getUser(): User 
+    public function getVotingRecord(): VotingRecord 
     {
-        return $this->user;
+        return $this->votingRecord;
     }
 
-    public function setUser(User  $user): void
+    public function setVotingRecord(VotingRecord  $votingRecord): void
     {
-        $this->user = $user;
-    }
-
-    public function getRaceInfo(): RaceInfo 
-    {
-        return $this->raceInfo;
-    }
-
-    public function setRaceInfo(RaceInfo  $raceInfo): void
-    {
-        $this->raceInfo = $raceInfo;
-    }
-
-    public function getHowToBuyMst(): HowToBuyMst
-    {
-        return $this->howToBuyMst;
-    }
-
-    public function setHowToBuyMst(HowToBuyMst $howToBuyMst): void
-    {
-        $this->howToBuyMst = $howToBuyMst;
+        $this->votingRecord = $votingRecord;
     }
 
     public function getShaftPattern(): int

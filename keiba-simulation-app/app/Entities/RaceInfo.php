@@ -19,16 +19,16 @@ class RaceInfo
     #[ORM\Column(type: "string", name: "jyo_cd", nullable: true)]
     private ?string $jyoCd = null;
 
-    #[ORM\Column(type: "integer", name: "race_num", nullable: true)]
+    #[ORM\Column(type: "integer", length: 3, name: "race_num", nullable: true)]
     private ?int $raceNum = null;
 
     #[ORM\Column(type: "text", name: "race_name", nullable: true)]
     private ?string $raceName = null;
 
-    #[ORM\Column(type: "integer", name: "entry_horce_count", nullable: true)]
+    #[ORM\Column(type: "integer", length: 4, name: "entry_horce_count", nullable: true)]
     private ?int $entryHorceCount = null;
 
-    #[ORM\Column(type: "string", name: "course_type", nullable: true)]
+    #[ORM\Column(type: "string", length: 11, name: "course_type", nullable: true)]
     private ?string $courseType = null;
 
     #[ORM\Column(type: "integer", name: "distance", nullable: true)]
@@ -42,6 +42,12 @@ class RaceInfo
 
     #[ORM\Column(type: "string", length: 11, name: "baba_state", nullable: true)]
     private ?string $babaState = null;
+
+    #[ORM\Column(type: "datetime", name: "created_at", nullable: true)]
+    private ?\DateTime $createdAt;
+
+    #[ORM\Column(type: "datetime", name: "updated_at", nullable: true)]
+    private ?\DateTime $updatedAt;
 
     public function getId(): int
     {
@@ -146,6 +152,26 @@ class RaceInfo
     public function setBabaState(?string $babaState): void
     {
         $this->babaState = $babaState;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTime $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTime $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
     }
 
 }
