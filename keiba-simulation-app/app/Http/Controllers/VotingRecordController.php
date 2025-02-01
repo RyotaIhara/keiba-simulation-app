@@ -100,14 +100,14 @@ class VotingRecordController extends Controller
         $otherWhereParams = [
             'jyoCd' => $racecourse,
         ];
-        $totallingDatas = $this->votingRecordService->getVotingRecordByFromToDate($fromRaceDate, $toRaceDate, $otherWhereParams);
+        $totallingDatas = $this->votingRecordDetailService->getVotingRecordDetailByFromToDate($fromRaceDate, $toRaceDate, $otherWhereParams);
 
         # 取得したデータをもとに集計する
         $totalVotingAmount = 0;
         $totalRefundAmount = 0;
-        foreach ($totallingDatas as $votingRecord) {
-            $totalVotingAmount += $votingRecord->getVotingAmount();
-            $totalRefundAmount += $votingRecord->getRefundAmount();
+        foreach ($totallingDatas as $votingRecordDetail) {
+            $totalVotingAmount += $votingRecordDetail->getVotingAmount();
+            $totalRefundAmount += $votingRecordDetail->getRefundAmount();
         }
 
         return view('voting_record.totalling.totalling', [

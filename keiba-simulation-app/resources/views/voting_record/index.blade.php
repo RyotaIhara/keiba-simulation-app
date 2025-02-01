@@ -24,10 +24,10 @@
     <table class="table">
         <thead>
             <tr>
-                <th>レース日</th>
-                <th>レース場（レース番号）</th>
-                <th>レース名</th>
-                <th>識別</th>
+                <th>レース場</th>
+                <th>レース番号</th>
+                <th>買い方</th>
+                <th>馬券の種類</th>
                 <th>買い目</th>
                 <th>投票金額</th>
                 <th>払戻金</th>
@@ -37,16 +37,13 @@
         <tbody>
             @foreach ($votingRecordsIndexViewDatas as $votingRecord)
                 <tr>
-                    <td>{{ $votingRecord['race_date'] }}</td>
-                    <td>
-                        {{ $votingRecord['racecourse_name'] }}
-                        ({{ $votingRecord['race_num'] }}R)
-                    </td>
-                    <td>{{ $votingRecord['race_name'] }}</td>
-                    <td>{{ $votingRecord['how_to_buy_mst_id'] }}</td>
+                    <td>{{ $votingRecord['racecourse_name'] }}</td>
+                    <td>{{ $votingRecord['race_num'] }}R</td>
+                    <td>{{ $votingRecord['how_to_buy_name'] }}</td>
+                    <td>{{ $votingRecord['betting_type_name'] }}</td>
                     <td>{{ $votingRecord['voting_uma_ban'] }}</td>
-                    <td>{{ $votingRecord['voting_amount'] }}</td>
-                    <td>{{ $votingRecord['refund_amount'] }}</td>
+                    <td>{{ number_format((int) $votingRecord['voting_amount'], 0) }}円</td>
+                    <td>{{ number_format((int) $votingRecord['refund_amount'], 0) }}円</td>
                     <td>
                         @if ($votingRecord['hit_status'] == "1") 的中
                         @elseif ($votingRecord['hit_status'] == "2") ×

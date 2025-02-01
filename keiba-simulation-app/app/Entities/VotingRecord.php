@@ -2,6 +2,8 @@
 
 namespace App\Entities;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: "App\Repositories\VotingRecordRepository")]
@@ -29,11 +31,19 @@ class VotingRecord
     #[ORM\JoinColumn(name: "betting_type_mst_id", referencedColumnName: "id", nullable: false)]
     private ?BettingTypeMst $bettingTypeMst = null;
 
+    #[ORM\OneToMany(mappedBy: "votingRecord", targetEntity: VotingRecordDetail::class, cascade: ["persist", "remove"], orphanRemoval: true)]
+    private Collection $votingRecordDetails;
+
     #[ORM\Column(type: "datetime", name: "created_at", nullable: true)]
     private ?\DateTime $createdAt;
 
     #[ORM\Column(type: "datetime", name: "updated_at", nullable: true)]
     private ?\DateTime $updatedAt;
+
+    public function __construct()
+    {
+        $this->votingRecordDetails = new ArrayCollection();
+    }
 
     public function getId(): int
     {
@@ -78,6 +88,23 @@ class VotingRecord
     public function setBettingTypeMst(BettingTypeMst $bettingTypeMst): void
     {
         $this->bettingTypeMst = $bettingTypeMst;
+    }
+
+    public function addVotingRecordDetail(VotingRecordDetail $detail): void
+    {
+        if (!$this->votingRecordDetails->contains($detail)) {
+            $this->votingRecordDetails->add($detail);
+            $detail->setVotingRecord($this);
+        }
+    }
+
+    public function removeVotingRecordDetail(VotingRecordDetail $detail): void
+    {
+        if ($this->votingRecordDetails->removeElement($detail)) {
+            if ($detail->getVotingRecord() === $this) {
+                $detail->setVotingRecord(null);
+            }
+        }
     }
 
     public function getCreatedAt(): ?\DateTime

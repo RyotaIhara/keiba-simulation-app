@@ -49,7 +49,7 @@ class VotingRecordDetail
         return $this->votingRecord;
     }
 
-    public function setVotingRecord(VotingRecord  $votingRecord): void
+    public function setVotingRecord(?VotingRecord  $votingRecord): void
     {
         $this->votingRecord = $votingRecord;
     }

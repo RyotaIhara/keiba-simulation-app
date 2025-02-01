@@ -37,11 +37,6 @@ class VotingRecordService extends CrudBase
         return $this->entityManager->getRepository(VotingRecord::class)->find($id);
     }
 
-    /** 対象日付から投票記録のデータを取得する **/
-    public function getVotingRecordByFromToDate($fromRaceDate, $toRaceDate, $otherWhereParams) {
-        return $this->entityManager->getRepository(VotingRecord::class)->getVotingRecordByFromToDate($fromRaceDate, $toRaceDate, $otherWhereParams);
-    }
-
     /** voting_recordにデータを作成する **/
     public function createVotingRecord(array $data)
     {
