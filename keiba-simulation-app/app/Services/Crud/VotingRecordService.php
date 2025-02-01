@@ -47,11 +47,13 @@ class VotingRecordService extends CrudBase
     {
         $votingRecord = new VotingRecord();
 
-        $votingRecord = $this->setVotingRecord($votingRecord, $data);
+        $updateFlag = False;
+        $votingRecord = $this->setVotingRecord($votingRecord, $data, $updateFlag);
 
         $this->entityManager->persist($votingRecord);
         $this->entityManager->flush();
 
+        return $votingRecord;
     }
 
     /** voting_recordのデータを更新する **/
@@ -60,10 +62,13 @@ class VotingRecordService extends CrudBase
         $votingRecordRepository = $this->entityManager->getRepository(VotingRecord::class);
         $votingRecord = $votingRecordRepository->find($id);
 
-        $votingRecord = $this->setVotingRecord($votingRecord, $data);
+        $updateFlag = True;
+        $votingRecord = $this->setVotingRecord($votingRecord, $data, $updateFlag);
 
         $this->entityManager->persist($votingRecord);
         $this->entityManager->flush();
+
+        return $votingRecord;
     }
 
     /** voting_recordのデータを物理削除する **/
@@ -79,37 +84,19 @@ class VotingRecordService extends CrudBase
     }
 
     /** createやupdate用にデータをセットする **/
-    private function setVotingRecord($votingRecord, $data)
+    private function setVotingRecord($votingRecord, $data, $updateFlag)
     {
         $authGeneral = app(AuthGeneral::class);
 
         $votingRecord->setUser($authGeneral->getLoginUser());
         $votingRecord->setRaceInfo($this->getValue($data, 'race_info', 'raceInfo'));
         $votingRecord->setHowToBuyMst($this->getValue($data, 'how_to_buy_mst', 'howToBuyMst'));
-        $votingRecord->setVotingUmaBan($this->getValue($data, 'voting_uma_ban', 'votingUmaBan'));
-        $votingRecord->setVotingAmount($this->getValue($data, 'voting_amount', 'votingAmount'));
-        $votingRecord->setRefundAmount($this->getValue($data, 'refund_amount', 'refundAmount'));
-        if (!empty($this->getValue($data, 'hit_status', 'hitStatus'))) {
-            $votingRecord->setHitStatus($this->getValue($data, 'hit_status', 'hitStatus'));
-        }
+        $votingRecord->setBettingTypeMst($this->getValue($data, 'betting_type_mst', 'bettingTypeMst'));
 
-        // フォーメーション・ボックス・ながしの場合
-        if (!empty($this->getValue($data, 'formation_voting_record', 'formationVotingRecord'))) {
-            $votingRecord->setFormationVotingRecord($this->getValue($data, 'formation_voting_record', 'formationVotingRecord'));
+        if (!$updateFlag) {
+            $votingRecord->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
         }
-        if (!empty($this->getValue($data, 'box_voting_record', 'boxVotingRecord'))) {
-            $votingRecord->setBoxVotingRecord($this->getValue($data, 'box_voting_record', 'boxVotingRecord'));
-        }
-        if (!empty($this->getValue($data, 'nagashi_voting_record', 'nagashiVotingRecord'))) {
-            $votingRecord->setNagashiVotingRecord($this->getValue($data, 'nagashi_voting_record', 'nagashiVotingRecord'));
-        }
-
-        if (!empty($this->getValue($data, 'created_at', 'createdAt'))) {
-            $votingRecord->setCreatedAt($this->getValue($data, 'created_at', 'createdAt'));
-        }
-        if (!empty($this->getValue($data, 'updated_at', 'updatedAt'))) {
-            $votingRecord->setUpdatedAt($this->getValue($data, 'updated_at', 'updatedAt'));
-        }
+        $votingRecord->setUpdatedAt(new \DateTime(date('Y-m-d H:i:s')));
 
         return $votingRecord;
     }

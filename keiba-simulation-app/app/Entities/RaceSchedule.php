@@ -2,7 +2,6 @@
 
 namespace App\Entities;
 
-use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: "App\Repositories\RaceScheduleRepository")]
@@ -15,7 +14,7 @@ class RaceSchedule
     private int $id;
 
     #[ORM\Column(type: "date", name: "race_date")]
-    private DateTime $raceDate;
+    private \DateTime $raceDate;
 
     #[ORM\Column(type: "string", name: "jyo_cd")]
     private string $jyoCd;
@@ -25,12 +24,12 @@ class RaceSchedule
         return $this->id;
     }
 
-    public function getRaceDate(): DateTime
+    public function getRaceDate(): \DateTime
     {
         return $this->raceDate;
     }
 
-    public function setRaceDate(DateTime $raceDate): void
+    public function setRaceDate(\DateTime $raceDate): void
     {
         $this->raceDate = $raceDate;
     }

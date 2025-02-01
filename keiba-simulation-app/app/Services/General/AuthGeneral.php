@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Session;
 use App\Services\General\GeneralBase;
 use App\Services\Crud\LoginSessionService;
 use Illuminate\Support\Str;
-use DateTime;
 
 class AuthGeneral extends GeneralBase
 {
@@ -26,15 +25,15 @@ class AuthGeneral extends GeneralBase
 
         if (!empty($loginSession)) {
             // 重複削除するために既存のものは有効期限切れにする
-            $this->loginSessionService->updateExpireTime($loginSession, new DateTime(date('Y-m-d H:i:s')));
+            $this->loginSessionService->updateExpireTime($loginSession, new \DateTime(date('Y-m-d H:i:s')));
         }
 
         // トークンを保存
         $paramsForInsert = array(
             'user' => $user,
             'token' => $authToken,
-            'expireTime' => (new DateTime())->modify('+1 day'),
-            'createdAt' => new DateTime(date('Y-m-d H:i:s')),
+            'expireTime' => (new \DateTime())->modify('+1 day'),
+            'createdAt' => new \DateTime(date('Y-m-d H:i:s')),
         );
         $this->loginSessionService->createLoingSession($paramsForInsert);
 

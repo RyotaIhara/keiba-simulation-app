@@ -40,9 +40,20 @@
             <div class="form-group">
                 <label for="how_to_buy">買い方を選択</label>
                 <select name="how_to_buy" id="how_to_buy" class="form-control" required>
-                    @foreach ($howToBuyMstDatas as $howToBuyMstData)
-                        <option value="{{ $howToBuyMstData->getId() }}">
-                            {{ $howToBuyMstData->getHowToBuyName() }}
+                    @foreach ($howToBuyMstDatas as $data)
+                        <option value="{{ $data->getId() }}">
+                            {{ $data->getHowToBuyName() }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="betting_type">馬券を選択</label>
+                <select name="betting_type" id="betting_type" class="form-control" required>
+                    @foreach ($bettingTypeMstDatas as $data)
+                        <option value="{{ $data->getId() }}">
+                            {{ $data->getBettingTypeName() }}
                         </option>
                     @endforeach
                 </select>

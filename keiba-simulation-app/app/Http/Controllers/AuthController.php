@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Session;
 use App\Services\Crud\UserService;
 use App\Services\Crud\LoginSessionService;
 use App\Services\General\AuthGeneral;
-use DateTime;
 
 class AuthController extends Controller
 {
@@ -57,7 +56,7 @@ class AuthController extends Controller
         // テーブルのexpire_timeも更新
         $loginSession = $this->loginSessionService->getLoginSessionByToken($authToken);
         if (!empty($loginSession)) {
-            $this->loginSessionService->updateExpireTime($loginSession, new DateTime(date('Y-m-d H:i:s')));
+            $this->loginSessionService->updateExpireTime($loginSession, new \DateTime(date('Y-m-d H:i:s')));
         }
 
         return redirect()->route('login')->with('success', 'ログアウトしました');

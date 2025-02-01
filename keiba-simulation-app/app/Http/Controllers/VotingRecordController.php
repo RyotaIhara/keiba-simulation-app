@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Entities\VotingRecord;
 use App\Services\Crud\VotingRecordService;
+use App\Services\Crud\VotingRecordDetailService;
 use App\Services\Crud\BoxVotingRecordService;
 use App\Services\Crud\FormationVotingRecordService;
 use App\Services\Crud\NagashiVotingRecordService;
@@ -13,13 +13,14 @@ use App\Services\Crud\RaceScheduleService;
 use App\Services\Crud\RaceInfoService;
 use App\Services\Crud\HowToBuyMstService;
 use App\Services\Crud\RacecourseMstService;
+use App\Services\Crud\BettingTypeMstService;
 use App\Services\General\VotingRecordGeneral;
 use Illuminate\Http\Request;
-use DateTime;
 
 class VotingRecordController extends Controller
 {
     private $votingRecordService;
+    private $votingRecordDetailService;
     private $boxVotingRecordService;
     private $formationVotingRecordService;
     private $nagashiVotingRecordService;
@@ -28,6 +29,7 @@ class VotingRecordController extends Controller
     private $raceInfoService;
     private $racecourseMstService;
     private $votingRecordGeneral;
+    private $bettingTypeMstService;
 
     const DEFAULT_PAZE = 1;
     const RACE_NUM_DATAS = [1,2,3,4,5,6,7,8,9,10,11,12];
@@ -35,6 +37,7 @@ class VotingRecordController extends Controller
     public function __construct()
     {
         $this->votingRecordService = app(VotingRecordService::class);
+        $this->votingRecordDetailService = app(VotingRecordDetailService::class);
         $this->boxVotingRecordService = app(BoxVotingRecordService::class);
         $this->formationVotingRecordService = app(FormationVotingRecordService::class);
         $this->nagashiVotingRecordService = app(NagashiVotingRecordService::class);
@@ -42,6 +45,7 @@ class VotingRecordController extends Controller
         $this->howToBuyMstService = app(HowToBuyMstService::class);
         $this->raceInfoService = app(RaceInfoService::class);
         $this->racecourseMstService = app(RacecourseMstService::class);
+        $this->bettingTypeMstService = app(BettingTypeMstService::class);
         $this->votingRecordGeneral = app(VotingRecordGeneral::class);
     }
 
@@ -117,7 +121,7 @@ class VotingRecordController extends Controller
         ]);
     }
 
-    /** 通常方式でのデータ作成（create） **/
+    /** 投票データ作成（テンプレート呼び出し） **/
     public function create(Request $request)
     {
         // 投票する対象日を取得
@@ -127,15 +131,14 @@ class VotingRecordController extends Controller
         $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst([
             'raceDate' => $raceDate
         ]);
-        $howToBuyMstDatas = $this->howToBuyMstService->getAllHowToBuyMsts();
-        $raceNumDatas = self::RACE_NUM_DATAS;
 
         // テンプレに渡す項目
         $params = [
             'subTitle' => '新規作成',
             'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
-            'howToBuyMstDatas' => $howToBuyMstDatas,
-            'raceNumDatas' => $raceNumDatas,
+            'howToBuyMstDatas' => $this->howToBuyMstService->getAllHowToBuyMsts(),
+            'bettingTypeMstDatas' => $this->bettingTypeMstService->getAllBettingTypeMsts(),
+            'raceNumDatas' => self::RACE_NUM_DATAS,
             'raceDate' => $raceDate,
         ];
 
@@ -221,22 +224,14 @@ class VotingRecordController extends Controller
         return view('voting_record.edit', $params);
     }
 
-
-    /** 通常方式でのデータ作成（store） **/
+    /** 投票データ作成（実施） **/
     public function store(Request $request, EntityManagerInterface $entityManager)
     {
-        $howToBuyMstService = app(HowToBuyMstService::class);
-
         $entityManager->beginTransaction(); // トランザクション開始
-
-        $request->validate([
-            'voting_uma_ban' => 'required',
-            'voting_amount' => 'required',
-        ]);
 
         // 投票データ作成にrace_infoが必要なので取得
         $raceInfo = $this->raceInfoService->getRaceInfoByUniqueColumn([
-            'raceDate' => new DateTime($request->input('race_date')),
+            'raceDate' => new \DateTime($request->input('race_date')),
             'jyoCd' => $request->input('racecourse_mst'),
             'raceNum' => $request->input('race_num'),
         ]);
@@ -245,19 +240,21 @@ class VotingRecordController extends Controller
             return redirect()->route('voting_record.create')->with('error', 'レース情報が存在しません');
         }
 
-        $howToBuyMst = $howToBuyMstService->getHowToBuyMst($request->input('how_to_buy'));
+        $howToBuyMst = $this->howToBuyMstService->getHowToBuyMst($request->input('how_to_buy'));
+        $bettingTypeMst = $this->bettingTypeMstService->getBettingTypeMst($request->input('betting_type'));
 
-        $paramsForInsert = array(
-            'raceInfo'     => $raceInfo,
-            'howToBuyMst'  => $howToBuyMst,
+        // まずvoting_recordにデータを作成する
+        $votingRecord = $this->votingRecordService->createVotingRecord([
+            'raceInfo'       => $raceInfo,
+            'howToBuyMst'    => $howToBuyMst,
+            'bettingTypeMst' => $bettingTypeMst,
+        ]);
+
+        $this->votingRecordDetailService->createVotingRecordDetail([
+            'votingRecord' => $votingRecord,
             'votingUmaBan' => $request->input('voting_uma_ban'),
             'votingAmount' => $request->input('voting_amount'),
-            'refundAmount' => 0,
-            'createdAt'    => new DateTime(date('Y-m-d H:i:s')),
-            'updatedAt'    => new DateTime(date('Y-m-d H:i:s'))
-        );
-
-        $this->votingRecordService->createVotingRecord($paramsForInsert);
+        ]);
 
         $entityManager->commit(); // すべて成功したらコミット
         return redirect()->route('voting_record.index')->with('success', '新しいデータの作成が完了しました');
@@ -272,7 +269,7 @@ class VotingRecordController extends Controller
 
         // 投票データ作成にrace_info_が必要なので取得
         $raceInfo = $this->raceInfoService->getRaceInfoByUniqueColumn([
-            'raceDate' => new DateTime($request->input('race_date')),
+            'raceDate' => new \DateTime($request->input('race_date')),
             'jyoCd' => $request->input('racecourse_mst'),
             'raceNum' => $request->input('race_num'),
         ]);
@@ -302,8 +299,8 @@ class VotingRecordController extends Controller
                 'shaft'               => $shaft,
                 'partner'             => $partner,
                 'votingAmountNagashi' => $votingAmountNagashi,
-                'createdAt'           => new DateTime(date('Y-m-d H:i:s')),
-                'updatedAt'           => new DateTime(date('Y-m-d H:i:s')),
+                'createdAt'           => new \DateTime(date('Y-m-d H:i:s')),
+                'updatedAt'           => new \DateTime(date('Y-m-d H:i:s')),
             ]);
 
             // 「流し」用のフォーマット処理を行う
@@ -334,8 +331,8 @@ class VotingRecordController extends Controller
                 'howToBuyMst'     => $howToBuyMst,
                 'votingUmaBanBox' => $votingUmaBanBox,
                 'votingAmountBox' => $votingAmountBox,
-                'createdAt'       => new DateTime(date('Y-m-d H:i:s')),
-                'updatedAt'       => new DateTime(date('Y-m-d H:i:s')),
+                'createdAt'       => new \DateTime(date('Y-m-d H:i:s')),
+                'updatedAt'       => new \DateTime(date('Y-m-d H:i:s')),
             ]);
 
             // ボックス用のフォーマット処理を行う
@@ -369,8 +366,8 @@ class VotingRecordController extends Controller
                 'votingUmaBan2' => $votingUmaBan2,
                 'votingUmaBan3' => $votingUmaBan3,
                 'votingAmountFormation' =>  $votingAmountFormation,
-                'createdAt'     => new DateTime(date('Y-m-d H:i:s')),
-                'updatedAt'     => new DateTime(date('Y-m-d H:i:s')),
+                'createdAt'     => new \DateTime(date('Y-m-d H:i:s')),
+                'updatedAt'     => new \DateTime(date('Y-m-d H:i:s')),
             ]);
 
             // フォーメーション用のフォーマット処理を行う
@@ -398,8 +395,8 @@ class VotingRecordController extends Controller
         foreach ($paramsForInsertList as $paramsForInsert) {
             $paramsForInsert['raceInfo'] = $raceInfo;
             $paramsForInsert['howToBuyMst'] = $howToBuyMst;
-            $paramsForInsert['createdAt'] = new DateTime(date('Y-m-d H:i:s'));
-            $paramsForInsert['updatedAt'] = new DateTime(date('Y-m-d H:i:s'));
+            $paramsForInsert['createdAt'] = new \DateTime(date('Y-m-d H:i:s'));
+            $paramsForInsert['updatedAt'] = new \DateTime(date('Y-m-d H:i:s'));
 
             $this->votingRecordService->createVotingRecord($paramsForInsert);
         }
@@ -426,7 +423,7 @@ class VotingRecordController extends Controller
         ]);
 
         $raceInfo = $this->raceInfoService->getRaceInfoByUniqueColumn([
-            'raceDate' => new DateTime($request->input('race_date')),
+            'raceDate' => new \DateTime($request->input('race_date')),
             'jyoCd' => $request->input('racecourse_mst'),
             'raceNum' => $request->input('race_num'),
         ]);
@@ -443,7 +440,7 @@ class VotingRecordController extends Controller
             'voting_uma_ban' => $request->input('voting_uma_ban'),
             'voting_amount'  => $request->input('voting_amount'),
             'refund_amount'  => 0,
-            'updated_at' => new DateTime(date('Y-m-d H:i:s'))
+            'updated_at' => new \DateTime(date('Y-m-d H:i:s'))
         );
 
         $this->votingRecordService->updateVotingRecord($id, $paramsForUpdate);

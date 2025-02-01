@@ -5,7 +5,6 @@ namespace App\Services\Scraping;
 use App\Services\Scraping\ScrapingBase;
 use App\Services\Crud\RaceScheduleService;
 use App\Services\Crud\RacecourseMstService;
-use DateTime;
 
 class BatchRaceScheduleService extends ScrapingBase
 {
@@ -32,7 +31,7 @@ class BatchRaceScheduleService extends ScrapingBase
                 ];
                 $racecourseMst = $racecourseMstService->getRacecourseMstByUniqueColumn($whereParams);
 
-                $date = new DateTime($year . '-' . $month . '-' . $day);
+                $date = new \DateTime($year . '-' . $month . '-' . $day);
                 $jyoCd = $racecourseMst->getJyoCd();
 
                 $createParams = array(

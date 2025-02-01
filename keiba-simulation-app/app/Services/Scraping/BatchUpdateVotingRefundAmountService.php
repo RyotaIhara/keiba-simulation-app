@@ -5,7 +5,6 @@ namespace App\Services\Scraping;
 use App\Services\Scraping\ScrapingBase;
 use App\Services\Crud\VotingRecordService;
 use App\Services\Crud\RaceRefundAmountService;
-use DateTime;
 
 class BatchUpdateVotingRefundAmountService extends ScrapingBase
 {
@@ -38,7 +37,7 @@ class BatchUpdateVotingRefundAmountService extends ScrapingBase
                 'voting_amount' => $votingRecord->getVotingAmount(),
                 'refund_amount' => $votingRecord->getRefundAmount(),
                 'hit_status' => 2,
-                'updated_at' => new DateTime(date('Y-m-d H:i:s'))
+                'updated_at' => new \DateTime(date('Y-m-d H:i:s'))
             );
 
             foreach ($raceRefundAmountDatas as $raceRefundAmount) {
