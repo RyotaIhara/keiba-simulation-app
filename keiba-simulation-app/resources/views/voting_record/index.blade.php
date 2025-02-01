@@ -4,7 +4,7 @@
     <h1>投票履歴</h1>
 
     {{-- 検索フォーム --}}
-    @include('voting_record.search')
+    @include('voting_record.parts.index.search')
 
     <div class="d-flex justify-content-start align-items-center mb-4">
         {{-- 新規作成ボタン --}}
@@ -12,14 +12,6 @@
             <a href="{{ route('voting_record.create', ['race_date' => request('race_date', \Carbon\Carbon::today()->format('Y-m-d'))]) }}" 
                class="btn btn-primary">
                 「{{ request('race_date', \Carbon\Carbon::today()->format('Y-m-d')) }}」のデータを新規作成
-            </a>
-        </div>
-
-        {{-- 特殊方式での新規作成ボタン --}}
-        <div style="margin-left: 10px;">
-            <a href="{{ route('voting_record.createSpecialMethod', ['race_date' => request('race_date', \Carbon\Carbon::today()->format('Y-m-d'))]) }}" 
-               class="btn btn-info">
-               特殊方式でデータを新規作成
             </a>
         </div>
 
@@ -76,5 +68,5 @@
     </table>
 
     {{-- ページャー --}}
-    @include('voting_record.pager')
+    @include('voting_record.parts.index.pager')
 @endsection

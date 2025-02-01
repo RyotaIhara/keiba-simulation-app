@@ -30,7 +30,8 @@ class FormationVotingRecordService extends CrudBase
     {
         $formationVotingRecord = new FormationVotingRecord();
 
-        $formationVotingRecord = $this->setFormationVotingRecord($formationVotingRecord, $data);
+        $updateFlag = False;
+        $formationVotingRecord = $this->setFormationVotingRecord($formationVotingRecord, $data, $updateFlag);
 
         $this->entityManager->persist($formationVotingRecord);
         $this->entityManager->flush();
@@ -44,7 +45,8 @@ class FormationVotingRecordService extends CrudBase
         $formationVotingRecordRepository = $this->entityManager->getRepository(FormationVotingRecord::class);
         $formationVotingRecord = $formationVotingRecordRepository->find($id);
 
-        $formationVotingRecord = $this->setFormationVotingRecord($formationVotingRecord, $data);
+        $updateFlag = True;
+        $formationVotingRecord = $this->setFormationVotingRecord($formationVotingRecord, $data, $updateFlag);
 
         $this->entityManager->persist($formationVotingRecord);
         $this->entityManager->flush();
@@ -63,23 +65,18 @@ class FormationVotingRecordService extends CrudBase
     }
 
     /** createやupdate用にデータをセットする **/
-    private function setFormationVotingRecord($formationVotingRecord, $data)
+    private function setFormationVotingRecord($formationVotingRecord, $data, $updateFlag)
     {
-        $authGeneral = app(AuthGeneral::class);
-
-        $formationVotingRecord->setUser($authGeneral->getLoginUser());
-        $formationVotingRecord->setRaceInfo($this->getValue($data, 'race_info', 'raceInfo'));
-        $formationVotingRecord->setHowToBuyMst($this->getValue($data, 'how_to_buy_mst', 'howToBuyMst'));
+        $formationVotingRecord->setVotingRecord($this->getValue($data, 'voting_record', 'votingRecord'));
         $formationVotingRecord->setVotingUmaBan1($this->getValue($data, 'voting_uma_ban_1', 'votingUmaBan1'));
         $formationVotingRecord->setVotingUmaBan2($this->getValue($data, 'voting_uma_ban_2', 'votingUmaBan2'));
         $formationVotingRecord->setVotingUmaBan3($this->getValue($data, 'voting_uma_ban_3', 'votingUmaBan3'));
         $formationVotingRecord->setVotingAmountFormation($this->getValue($data, 'voting_amount_formaation', 'votingAmountFormation'));
-        if (!empty($this->getValue($data, 'created_at', 'createdAt'))) {
-            $formationVotingRecord->setCreatedAt($this->getValue($data, 'created_at', 'createdAt'));
+
+        if (!$updateFlag) {
+            $formationVotingRecord->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
         }
-        if (!empty($this->getValue($data, 'updated_at', 'updatedAt'))) {
-            $formationVotingRecord->setUpdatedAt($this->getValue($data, 'updated_at', 'updatedAt'));
-        }
+        $formationVotingRecord->setUpdatedAt(new \DateTime(date('Y-m-d H:i:s')));
 
         return $formationVotingRecord;
     }

@@ -30,7 +30,8 @@ class BoxVotingRecordService extends CrudBase
     {
         $boxVotingRecord = new BoxVotingRecord();
 
-        $boxVotingRecord = $this->setBoxVotingRecord($boxVotingRecord, $data);
+        $updateFlag = False;
+        $boxVotingRecord = $this->setBoxVotingRecord($boxVotingRecord, $data, $updateFlag);
 
         $this->entityManager->persist($boxVotingRecord);
         $this->entityManager->flush();
@@ -44,7 +45,8 @@ class BoxVotingRecordService extends CrudBase
         $boxVotingRecordRepository = $this->entityManager->getRepository(BoxVotingRecord::class);
         $boxVotingRecord = $boxVotingRecordRepository->find($id);
 
-        $boxVotingRecord = $this->setBoxVotingRecord($boxVotingRecord, $data);
+        $updateFlag = True;
+        $boxVotingRecord = $this->setBoxVotingRecord($boxVotingRecord, $data, $updateFlag);
 
         $this->entityManager->persist($boxVotingRecord);
         $this->entityManager->flush();
@@ -63,21 +65,16 @@ class BoxVotingRecordService extends CrudBase
     }
 
     /** createやupdate用にデータをセットする **/
-    private function setBoxVotingRecord($boxVotingRecord, $data)
+    private function setBoxVotingRecord($boxVotingRecord, $data, $updateFlag)
     {
-        $authGeneral = app(AuthGeneral::class);
-
-        $boxVotingRecord->setUser($authGeneral->getLoginUser());
-        $boxVotingRecord->setRaceInfo($this->getValue($data, 'race_info', 'raceInfo'));
-        $boxVotingRecord->setHowToBuyMst($this->getValue($data, 'how_to_buy_mst', 'howToBuyMst'));
+        $boxVotingRecord->setVotingRecord($this->getValue($data, 'voting_record', 'votingRecord'));
         $boxVotingRecord->setVotingUmaBanBox($this->getValue($data, 'voting_uma_ban_box', 'votingUmaBanBox'));
         $boxVotingRecord->setVotingAmountBox($this->getValue($data, 'voting_amount_box', 'votingAmountBox'));
-        if (!empty($this->getValue($data, 'created_at', 'createdAt'))) {
-            $boxVotingRecord->setCreatedAt($this->getValue($data, 'created_at', 'createdAt'));
+
+        if (!$updateFlag) {
+            $boxVotingRecord->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
         }
-        if (!empty($this->getValue($data, 'updated_at', 'updatedAt'))) {
-            $boxVotingRecord->setUpdatedAt($this->getValue($data, 'updated_at', 'updatedAt'));
-        }
+        $boxVotingRecord->setUpdatedAt(new \DateTime(date('Y-m-d H:i:s')));
 
         return $boxVotingRecord;
     }

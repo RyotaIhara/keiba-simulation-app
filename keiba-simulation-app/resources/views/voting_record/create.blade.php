@@ -38,17 +38,6 @@
             </div>
 
             <div class="form-group">
-                <label for="how_to_buy">買い方を選択</label>
-                <select name="how_to_buy" id="how_to_buy" class="form-control" required>
-                    @foreach ($howToBuyMstDatas as $data)
-                        <option value="{{ $data->getId() }}">
-                            {{ $data->getHowToBuyName() }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="form-group">
                 <label for="betting_type">馬券を選択</label>
                 <select name="betting_type" id="betting_type" class="form-control" required>
                     @foreach ($bettingTypeMstDatas as $data)
@@ -59,14 +48,55 @@
                 </select>
             </div>
 
+            <!-- 投票方法ごとに記入する内容を変更 -->
             <div class="form-group">
-                <label for="voting_uma_ban">買い目</label>
-                <input type="text" name="voting_uma_ban" id="voting_uma_ban" class="form-control" value="" required />
+                <label for="how_to_buy">買い方を選択</label><br>
+                <input type="radio" name="how_to_buy" id="normal" value="Normal" checked>
+                <label for="normal">通常</label><br>
+                <input type="radio" name="how_to_buy" id="box" value="Box">
+                <label for="box">ボックス</label><br>
+                <input type="radio" name="how_to_buy" id="nagashi" value="Nagashi">
+                <label for="nagashi">ながし</label><br>
+                <input type="radio" name="how_to_buy" id="formation" value="Formation">
+                <label for="formation">フォーメーション</label>
             </div>
-            <div class="form-group">
-                <label for="voting_amount">掛け金</label>
-                <input type="number" name="voting_amount" id="voting_amount" class="form-control" value="" required />
+
+            <div id="dynamic-content">
+                <div id="Normal" class="template-content">
+                    @include('voting_record.parts.create.normal')
+                </div>
+                <div id="Box" class="template-content" style="display: none;">
+                    @include('voting_record.parts.create.box')
+                </div>
+                <div id="Nagashi" class="template-content" style="display: none;">
+                    @include('voting_record.parts.create.nagashi')
+                </div>
+                <div id="Formation" class="template-content" style="display: none;">
+                    @include('voting_record.parts.create.formation')
+                </div>
             </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // ラジオボタンの変更イベントを監視
+                    document.querySelectorAll('input[name="how_to_buy"]').forEach(function (radio) {
+                        radio.addEventListener('change', function () {
+                            const selectedValue = this.value; // 選択されたラジオボタンの値を取得
+
+                            // すべてのテンプレートを非表示
+                            document.querySelectorAll('.template-content').forEach(function (template) {
+                                template.style.display = 'none';
+                            });
+
+                            // 選択されたテンプレートのみ表示
+                            const selectedTemplate = document.getElementById(selectedValue);
+                            if (selectedTemplate) {
+                                selectedTemplate.style.display = 'block';
+                            }
+                        });
+                    });
+                });
+            </script>
 
             <input type="hidden" name="race_date" value="{{ $raceDate }}" />
 

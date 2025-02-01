@@ -11,6 +11,6 @@
     <input type="text" name="voting_uma_ban_3_formaation" id="voting_uma_ban_3_formaation" class="form-control" value="">
 </div>
 <div class="form-group">
-    <label for="voting_amount_formaation">掛け金</label>
-    <input type="number" name="voting_amount_formaation" id="voting_amount_formaation" class="form-control" value="">
+    <label for="voting_amount_formation">掛け金</label>
+    <input type="number" name="voting_amount_formation" id="voting_amount_formation" class="form-control" value="">
 </div>

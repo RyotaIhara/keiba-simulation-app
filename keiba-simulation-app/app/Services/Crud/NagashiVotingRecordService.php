@@ -30,7 +30,8 @@ class NagashiVotingRecordService extends CrudBase
     {
         $nagashiVotingRecord = new NagashiVotingRecord();
 
-        $nagashiVotingRecord = $this->setNagashiVotingRecord($nagashiVotingRecord, $data);
+        $updateFlag = False;
+        $nagashiVotingRecord = $this->setNagashiVotingRecord($nagashiVotingRecord, $data, $updateFlag);
 
         $this->entityManager->persist($nagashiVotingRecord);
         $this->entityManager->flush();
@@ -44,10 +45,13 @@ class NagashiVotingRecordService extends CrudBase
         $nagashiVotingRecordRepository = $this->entityManager->getRepository(NagashiVotingRecord::class);
         $nagashiVotingRecord = $nagashiVotingRecordRepository->find($id);
 
-        $nagashiVotingRecord = $this->setNagashiVotingRecord($nagashiVotingRecord, $data);
+        $updateFlag = True;
+        $nagashiVotingRecord = $this->setNagashiVotingRecord($nagashiVotingRecord, $data, $updateFlag);
 
         $this->entityManager->persist($nagashiVotingRecord);
         $this->entityManager->flush();
+
+        return $nagashiVotingRecord;
     }
 
     /** nagashi_voting_recordのデータを削除する **/
@@ -63,23 +67,20 @@ class NagashiVotingRecordService extends CrudBase
     }
 
     /** createやupdate用にデータをセットする **/
-    private function setNagashiVotingRecord($nagashiVotingRecord, $data)
+    private function setNagashiVotingRecord($nagashiVotingRecord, $data, $updateFlag)
     {
         $authGeneral = app(AuthGeneral::class);
 
-        $nagashiVotingRecord->setUser($authGeneral->getLoginUser());
-        $nagashiVotingRecord->setRaceInfo($this->getValue($data, 'race_info', 'raceInfo'));
-        $nagashiVotingRecord->setHowToBuyMst($this->getValue($data, 'how_to_buy_mst', 'howToBuyMst'));
-        $nagashiVotingRecord->setShaftPattern($data['howToNagashi']);
+        $nagashiVotingRecord->setVotingRecord($this->getValue($data, 'voting_record', 'votingRecord'));
+        $nagashiVotingRecord->setShaftPattern($this->getValue($data, 'how_to_nagashi', 'howToNagashi'));
         $nagashiVotingRecord->setShaft($data['shaft']);
         $nagashiVotingRecord->setPartner($data['partner']);
         $nagashiVotingRecord->setVotingAmountNagashi($this->getValue($data, 'voting_amount_nagashi', 'votingAmountNagashi'));
-        if (!empty($this->getValue($data, 'created_at', 'createdAt'))) {
-            $nagashiVotingRecord->setCreatedAt($this->getValue($data, 'created_at', 'createdAt'));
+
+        if (!$updateFlag) {
+            $nagashiVotingRecord->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
         }
-        if (!empty($this->getValue($data, 'updated_at', 'updatedAt'))) {
-            $nagashiVotingRecord->setUpdatedAt($this->getValue($data, 'updated_at', 'updatedAt'));
-        }
+        $nagashiVotingRecord->setUpdatedAt(new \DateTime(date('Y-m-d H:i:s')));
 
         return $nagashiVotingRecord;
     }
