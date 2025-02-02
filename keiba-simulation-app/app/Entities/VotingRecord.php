@@ -90,21 +90,20 @@ class VotingRecord
         $this->bettingTypeMst = $bettingTypeMst;
     }
 
-    public function addVotingRecordDetail(VotingRecordDetail $detail): void
+    /**
+     * 関連する VotingRecordDetail を取得する
+     */
+    public function getVotingRecordDetails(): Collection
     {
-        if (!$this->votingRecordDetails->contains($detail)) {
-            $this->votingRecordDetails->add($detail);
-            $detail->setVotingRecord($this);
-        }
+        return $this->votingRecordDetails;
     }
 
-    public function removeVotingRecordDetail(VotingRecordDetail $detail): void
+    /**
+     * 関連する VotingRecordDetail を削除する
+     */
+    public function removeAllVotingRecordDetails(): void
     {
-        if ($this->votingRecordDetails->removeElement($detail)) {
-            if ($detail->getVotingRecord() === $this) {
-                $detail->setVotingRecord(null);
-            }
-        }
+        $this->votingRecordDetails->clear();
     }
 
     public function getCreatedAt(): ?\DateTime

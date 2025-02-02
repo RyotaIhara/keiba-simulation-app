@@ -4,7 +4,6 @@ namespace App\Services\Crud;
 
 use App\Entities\BoxVotingRecord;
 use App\Services\Crud\CrudBase;
-use App\Services\General\AuthGeneral;
 
 class BoxVotingRecordService extends CrudBase
 {

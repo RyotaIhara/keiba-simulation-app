@@ -12,7 +12,7 @@ use App\Services\Crud\RaceScheduleService;
     （docker exec -it keiba_simulation_app php artisan app:batch-race-info-import-command）
 
     オプションは下記で「fromRaceDate、toRaceDate」もしくは「raceId」のどちらかを指定してください
-    （docker exec -it keiba_simulation_app php artisan app:batch-race-info-import-command --fromRaceDate='2025-01-01' --toRaceDate='2025-01-31'）
+    （docker exec -it keiba_simulation_app php artisan app:batch-race-info-import-command --fromRaceDate='2025-01-01' --toRaceDate='2025-01-01'）
 ***/
 
 class BatchRaceInfoImportCommand extends Command

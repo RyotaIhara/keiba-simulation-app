@@ -30,8 +30,8 @@ class VotingRecordRepository extends EntityRepository
                 `voting_record`.`how_to_buy_mst_id` AS `how_to_buy_mst_id`,
                 CASE 
                     WHEN how_to_buy_code = 'box' THEN `box_voting_record`.`voting_uma_ban_box`
-                    WHEN how_to_buy_code = 'nagashi' THEN `nagashi_voting_record`.`shaft` + '⇒' + `nagashi_voting_record`.`partner`
-                    WHEN how_to_buy_code = 'formation' THEN `formation_voting_record`.`voting_uma_ban_1` + '⇒' + `formation_voting_record`.`voting_uma_ban_2` + '⇒' + `formation_voting_record`.`voting_uma_ban_3`
+                    WHEN how_to_buy_code = 'nagashi' THEN CONCAT(`nagashi_voting_record`.`shaft`, '⇒', `nagashi_voting_record`.`partner`)
+                    WHEN how_to_buy_code = 'formation' THEN CONCAT(`formation_voting_record`.`voting_uma_ban_1`, '⇒', `formation_voting_record`.`voting_uma_ban_2`, '⇒', `formation_voting_record`.`voting_uma_ban_3`)
                     ELSE `voting_record_detail`.`voting_uma_ban`
                 END AS `voting_uma_ban`,
                 SUM(`voting_record_detail`.`voting_amount`) AS `voting_amount`,

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Doctrine\ORM\EntityManagerInterface;
-
 use App\Services\Crud\VotingRecordService;
 use App\Services\Crud\VotingRecordDetailService;
 use App\Services\Crud\BoxVotingRecordService;
@@ -103,6 +101,21 @@ class VotingRecordController extends Controller
         ]);
     }
 
+    /** 投票詳細 **/
+    public function show(string $id)
+    {
+        $votingRecord = $this->votingRecordService->getVotingRecord($id);
+        $racecourseMst = $this->racecourseMstService->getRacecourseMstByUniqueColumn(['jyoCd' => $votingRecord->getRaceInfo()->getJyoCd()]);
+
+        // テンプレに渡す項目
+        $params = [
+            'votingRecord' => $votingRecord,
+            'racecourseMst' => $racecourseMst
+        ];
+
+        return view('voting_record.show', $params);
+    }
+
     /** 日付ごとの集計記録 **/
     public function totalling(Request $request)
     {
@@ -160,60 +173,6 @@ class VotingRecordController extends Controller
         ];
 
         return view('voting_record.create', $params);
-    }
-
-    /** データ複製 **/
-    public function copy(string $id)
-    {
-        // 投票する対象日とコピー元の投票データを取得
-        $votingRecord = $this->votingRecordService->getVotingRecord($id);
-        $raceDate = $votingRecord->getRaceInfo()->getRaceDate()->format('Y-m-d');
-
-        // フォーム項目でレース場一覧とレース数の取得が必要な箇所があるので対応
-        $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst([
-            'raceDate' => $raceDate
-        ]);
-        $howToBuyMstDatas = $this->howToBuyMstService->getAllHowToBuyMsts();
-        $raceNumDatas = self::RACE_NUM_DATAS;
-
-        // テンプレに渡す項目
-        $params = [
-            'subTitle' => '複製',
-            'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
-            'howToBuyMstDatas' => $howToBuyMstDatas,
-            'raceNumDatas' => $raceNumDatas,
-            'raceDate' => $raceDate,
-            'votingRecord' => $votingRecord
-        ];
-
-        return view('voting_record.create', $params);
-    }
-
-    /* 既存データの修正（テンプレ呼び出し） */
-    public function edit(string $id)
-    {
-        // 投票する対象日と編集元の投票データを取得
-        $votingRecord = $this->votingRecordService->getVotingRecord($id);
-        $raceDate = $votingRecord->getRaceInfo()->getRaceDate()->format('Y-m-d');
-
-        // フォーム項目でレース場一覧とレース数の取得が必要な箇所があるので対応
-        $raceSchedulesWithCourseDatas = $this->raceScheduleService->getRaceSchedulesWithCourseMst([
-            'raceDate' => $raceDate
-        ]);
-        $howToBuyMstDatas = $this->howToBuyMstService->getAllHowToBuyMsts();
-        $raceNumDatas = self::RACE_NUM_DATAS;
-
-        // テンプレに渡す項目
-        $params = [
-            'subTitle' => '編集',
-            'raceSchedulesWithCourseDatas' => $raceSchedulesWithCourseDatas,
-            'howToBuyMstDatas' => $howToBuyMstDatas,
-            'raceNumDatas' => $raceNumDatas,
-            'raceDate' => $raceDate,
-            'votingRecord' => $votingRecord
-        ];
-
-        return view('voting_record.edit', $params);
     }
 
     /** 投票データ作成（実施） **/
@@ -304,48 +263,90 @@ class VotingRecordController extends Controller
         return redirect()->route('voting_record.index')->with('error', 'データ作成中に何かしらのエラーが発生しました');
     }
 
-    public function show(string $id)
-    {
-        // 一旦今回は使用しない
+    /** 投票金額の更新（テンプレート表示） **/
+    public function editVotingAmount(string $id) {
+        $votingRecord = $this->votingRecordService->getVotingRecord($id);
+        $racecourseMst = $this->racecourseMstService->getRacecourseMstByUniqueColumn(['jyoCd' => $votingRecord->getRaceInfo()->getJyoCd()]);
+
+        // テンプレに渡す項目
+        $params = [
+            'votingRecord' => $votingRecord,
+            'racecourseMst' => $racecourseMst
+        ];
+
+        return view('voting_record.updateVotingAmount', $params);
     }
 
-    /* 既存データの修正（実行） */
-    public function update(Request $request, string $id, EntityManagerInterface $entityManager)
-    {
-        $howToBuyMstService = app(HowToBuyMstService::class);
+    /** 投票金額の更新（実施） **/
+    public function updateVotingAmount(string $id, Request $request) {
+        $votingRecord = $this->votingRecordService->getVotingRecord($id);
+        $racecourseMst = $this->racecourseMstService->getRacecourseMstByUniqueColumn(['jyoCd' => $votingRecord->getRaceInfo()->getJyoCd()]);
 
-        $entityManager->beginTransaction(); // トランザクション開始
+        // 更新対象の金額
+        $updateVotingAmount = $request->input('update_voting_amount');
 
-        $request->validate([
-            'voting_uma_ban' => 'required',
-            'voting_amount' => 'required',
-        ]);
+        $howToBuy = $votingRecord->getHowToBuyMst()->getHowToBuyCode();
 
-        $raceInfo = $this->raceInfoService->getRaceInfoByUniqueColumn([
-            'raceDate' => new \DateTime($request->input('race_date')),
-            'jyoCd' => $request->input('racecourse_mst'),
-            'raceNum' => $request->input('race_num'),
-        ]);
+        if ($howToBuy === "box") {
+            // ボックス
+            $boxVotingRecord = $this->boxVotingRecordService->getBoxVotingRecordByUniqueColumn([
+                'votingRecord' => $votingRecord,
+            ]);
 
-        if (empty($raceInfo)) {
-            return redirect()->route('voting_record.create')->with('error', 'レース情報が存在しません');
+            // box_voting_recordを更新
+            $this->boxVotingRecordService->updateBoxVotingRecord($boxVotingRecord->getId(), [
+                'votingRecord' => $votingRecord,
+                'votingUmaBanBox' => $boxVotingRecord->getVotingUmaBanBox(),
+                'votingAmountBox' => $updateVotingAmount,
+            ]);
+        }
+        else if ($howToBuy === "nagashi") {
+            // ながし
+            $nagashiotingRecord = $this->nagashiVotingRecordService->getNagashiVotingRecordByUniqueColumn([
+                'votingRecord' => $votingRecord,
+            ]);
+
+            // nagashi_voting_recordを更新
+            $this->nagashiVotingRecordService->updateNagashiVotingRecord($nagashiotingRecord->getId(), [
+                'votingRecord' => $votingRecord,
+                'howToNagashi' => $nagashiotingRecord->getHowToNagashi(),
+                'shaft' => $nagashiotingRecord->getShaft(),
+                'partner' => $nagashiotingRecord->getPartner(9),
+                'votingAmountBox' => $updateVotingAmount,
+            ]);
+        }
+        else if ($howToBuy === "formation") {
+            // フォーメーション
+            $formationBoxVotingRecord = $this->formationVotingRecordService->getFormationVotingRecordByUniqueColumn([
+                'votingRecord' => $votingRecord,
+            ]);
+
+            // formation_voting_recordを更新
+            $this->formationVotingRecordService->updateFormationVotingRecord($formationBoxVotingRecord->getId(), [
+                'votingRecord' => $votingRecord,
+                'votingUmaBan1' => $formationBoxVotingRecord->getVotingUmaBan1(),
+                'votingUmaBan2' => $formationBoxVotingRecord->getVotingUmaBan2(),
+                'votingUmaBan3' => $formationBoxVotingRecord->getVotingUmaBan3(),
+                'votingAmountFormation' => $updateVotingAmount,
+            ]);
         }
 
-        $howToBuyMst = $howToBuyMstService->getHowToBuyMst($request->input('how_to_buy'));
+        // voting_record_detailを更新
+        foreach ($votingRecord->getVotingRecordDetails() as $detail) {
+            $this->votingRecordDetailService->updateVotingRecordDetail($detail->getId(), [
+                'votingRecord' => $votingRecord,
+                'votingUmaBan' => $detail->getVotingUmaBan(),
+                'votingAmount' =>  $updateVotingAmount,
+            ]);
+        }
 
-        $paramsForUpdate = array(
-            'race_info'      => $raceInfo,
-            'howToBuyMst'    => $howToBuyMst,
-            'voting_uma_ban' => $request->input('voting_uma_ban'),
-            'voting_amount'  => $request->input('voting_amount'),
-            'refund_amount'  => 0,
-            'updated_at' => new \DateTime(date('Y-m-d H:i:s'))
-        );
+        // テンプレに渡す項目
+        $params = [
+            'votingRecord' => $votingRecord,
+            'racecourseMst' => $racecourseMst
+        ];
 
-        $this->votingRecordService->updateVotingRecord($id, $paramsForUpdate);
-
-        $entityManager->commit(); // すべて成功したらコミット
-        return redirect()->route('voting_record.index')->with('success', 'データの修正が完了しました');
+        return view('voting_record.show', $params);
     }
 
     /** 投票データの削除 **/

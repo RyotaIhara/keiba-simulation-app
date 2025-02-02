@@ -15,36 +15,38 @@
         $authGeneralService = new \App\Services\General\AuthGeneral();
     @endphp
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link text-light font-weight-bold" href="{{ route('racecourse_mst.index') }}">競馬場一覧</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light font-weight-bold" href="{{ route('user.index') }}">ユーザー</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light font-weight-bold" href="{{ route('voting_record.index') }}">投票</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light font-weight-bold" href="{{ route('voting_record.totalling') }}">集計</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
                 @if ($authGeneralService->isLogin())
                     <li class="nav-item">
-                        <a class="nav-link" href="#">こんにちは、{{ $authGeneralService->getLoginUser()->getUsername() }} さん！</a>
+                        <a class="nav-link text-white font-weight-bold" href="#">こんにちは、{{ $authGeneralService->getLoginUser()->getUsername() }} さん！</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/logout">ログアウト</a>
+                        <a class="nav-link text-white font-weight-bold" href="/logout">ログアウト</a>
                     </li>
                 @else
                     <li class="nav-item">
-                        <a class="nav-link" href="/login">ログイン</a>
+                        <a class="nav-link text-white font-weight-bold" href="/login">ログイン</a>
                     </li>
                 @endif
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('racecourse_mst.index') }}">競馬場一覧</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('user.index') }}">ユーザー</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('voting_record.index') }}">投票</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('voting_record.totalling') }}">集計</a>
-                </li>
             </ul>
         </div>
     </nav>

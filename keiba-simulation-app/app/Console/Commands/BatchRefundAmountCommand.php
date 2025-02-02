@@ -13,7 +13,7 @@ use App\Services\Crud\RaceScheduleService;
     （docker exec -it keiba_simulation_app php artisan app:batch-refund-amount-command）
 
     オプションは下記で「fromRaceDate、toRaceDate」もしくは「raceId」のどちらかを指定してください
-    （docker exec -it keiba_simulation_app php artisan app:batch-refund-amount-command --fromRaceDate='2025-01-01' --toRaceDate='2025-01-31'）
+    （docker exec -it keiba_simulation_app php artisan app:batch-refund-amount-command --fromRaceDate='2025-01-01' --toRaceDate='2025-01-01'）
 ***/
 
 class BatchRefundAmountCommand extends Command
@@ -27,7 +27,8 @@ class BatchRefundAmountCommand extends Command
                             {--fromRaceDate= : 開始日付} 
                             {--toRaceDate= : 終了日付}
                             {--raceId= : レースID}
-                            {--startRaceNum= : 集計をスタートするレース番号}';
+                            {--startRaceNum= : 集計をスタートするレース番号}
+                            {--endRaceNum= : 集計を終了するレース番号}';
 
     /**
      * The console command description.
@@ -54,6 +55,7 @@ class BatchRefundAmountCommand extends Command
         $toRaceDate = $this->option('toRaceDate') ?: NULL;
         $optionRaceId = $this->option('raceId') ?: NULL;
         $startRaceNum = $this->option('startRaceNum') ?: self::DEFAULT_START_RACE_NUM;
+        $endRaceNum = $this->option('endRaceNum') ?: 0;
 
         if (!(is_null($fromRaceDate) && is_null($toRaceDate)) || !is_null($optionRaceId)) {
             //この場合はうまくいくので処理続行
@@ -106,6 +108,11 @@ class BatchRefundAmountCommand extends Command
 
                     $raceIdForGetRaceCount = $year . $jyoCd . $month . $day . str_pad($tmpRaceNum, 2, '0', STR_PAD_LEFT);
                     $raceCount = $batchRaceInfoImportService->getCountOfRaces($raceIdForGetRaceCount);
+                }
+
+                // 集計終了レースが指定されている場合
+                if ($endRaceNum !== 0) {
+                    $raceCount = $endRaceNum;
                 }
 
                 for ($raceNum = $startRaceNum; $raceNum <= $raceCount; $raceNum++) {

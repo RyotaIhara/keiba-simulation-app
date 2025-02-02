@@ -56,13 +56,8 @@
                         @endif
                     </td>
                     <td>
-                        <a href="{{ route('voting_record.copy', $votingRecord['id']) }}" class="btn btn-info">複製</a>
-                        <a href="{{ route('voting_record.edit', $votingRecord['id']) }}" class="btn btn-warning">修正する</a>
-                        <form action="{{ route('voting_record.destroy', $votingRecord['id']) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">削除する</button>
-                        </form>
+                        <a href="{{ route('voting_record.show', $votingRecord['id']) }}" class="btn btn-info">詳細</a>
+                        <a href="{{ route('voting_record.create', $votingRecord['id']) }}" class="btn btn-warning">複製</a>
                     </td>
                 </tr>
             @endforeach

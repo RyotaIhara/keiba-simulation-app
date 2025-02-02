@@ -69,8 +69,6 @@ class NagashiVotingRecordService extends CrudBase
     /** createやupdate用にデータをセットする **/
     private function setNagashiVotingRecord($nagashiVotingRecord, $data, $updateFlag)
     {
-        $authGeneral = app(AuthGeneral::class);
-
         $nagashiVotingRecord->setVotingRecord($this->getValue($data, 'voting_record', 'votingRecord'));
         $nagashiVotingRecord->setShaftPattern($this->getValue($data, 'how_to_nagashi', 'howToNagashi'));
         $nagashiVotingRecord->setShaft($data['shaft']);

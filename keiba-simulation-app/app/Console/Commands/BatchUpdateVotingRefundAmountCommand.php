@@ -11,7 +11,7 @@ use App\Services\Scraping\BatchUpdateVotingRefundAmountService;
     （docker exec -it keiba_simulation_app php artisan app:batch-update-voting-refund-amount-command）
 
     オプションは下記で「fromRaceDate、toRaceDate」もしくは「raceId」のどちらかを指定してください
-    （docker exec -it keiba_simulation_app php artisan app:batch-update-voting-refund-amount-command --fromRaceDate='2025-01-01' --toRaceDate='2025-01-31'）
+    （docker exec -it keiba_simulation_app php artisan app:batch-update-voting-refund-amount-command --fromRaceDate='2025-01-01' --toRaceDate='2025-01-01'）
 ***/
 
 class BatchUpdateVotingRefundAmountCommand extends Command
