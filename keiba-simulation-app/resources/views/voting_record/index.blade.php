@@ -49,12 +49,14 @@
                     <td>{{ $votingRecord['voting_uma_ban'] }}</td>
                     <td>{{ number_format((int) $votingRecord['voting_amount'], 0) }}円</td>
                     <td>{{ number_format((int) $votingRecord['refund_amount'], 0) }}円</td>
-                    <td>
-                        @if ($votingRecord['hit_status'] == "1") 的中
-                        @elseif ($votingRecord['hit_status'] == "2") ×
-                        @else 未確定
-                        @endif
-                    </td>
+                    <!-- 的中フラグ -->
+                    @if ($votingRecord['hit_status'] == "1") 
+                        <td><span class="text-success font-weight-bold">的中</span></td>
+                    @elseif ($votingRecord['hit_status'] == "2") 
+                        <td>×</td>
+                    @else 
+                        <td>未確定</td>
+                    @endif
                     <td>
                         <a href="{{ route('voting_record.show', $votingRecord['id']) }}" class="btn btn-info">詳細</a>
                         <a href="{{ route('voting_record.create', $votingRecord['id']) }}" class="btn btn-warning">複製</a>
