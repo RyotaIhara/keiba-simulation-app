@@ -24,6 +24,7 @@ class RaceInfo extends \App\Entities\RaceInfo implements \Doctrine\ORM\Proxy\Int
     private const LAZY_OBJECT_PROPERTY_SCOPES = [
         "\0".parent::class."\0".'babaState' => [parent::class, 'babaState', null],
         "\0".parent::class."\0".'courseType' => [parent::class, 'courseType', null],
+        "\0".parent::class."\0".'createdAt' => [parent::class, 'createdAt', null],
         "\0".parent::class."\0".'distance' => [parent::class, 'distance', null],
         "\0".parent::class."\0".'entryHorceCount' => [parent::class, 'entryHorceCount', null],
         "\0".parent::class."\0".'id' => [parent::class, 'id', null],
@@ -32,9 +33,11 @@ class RaceInfo extends \App\Entities\RaceInfo implements \Doctrine\ORM\Proxy\Int
         "\0".parent::class."\0".'raceName' => [parent::class, 'raceName', null],
         "\0".parent::class."\0".'raceNum' => [parent::class, 'raceNum', null],
         "\0".parent::class."\0".'rotation' => [parent::class, 'rotation', null],
+        "\0".parent::class."\0".'updatedAt' => [parent::class, 'updatedAt', null],
         "\0".parent::class."\0".'weather' => [parent::class, 'weather', null],
         'babaState' => [parent::class, 'babaState', null],
         'courseType' => [parent::class, 'courseType', null],
+        'createdAt' => [parent::class, 'createdAt', null],
         'distance' => [parent::class, 'distance', null],
         'entryHorceCount' => [parent::class, 'entryHorceCount', null],
         'id' => [parent::class, 'id', null],
@@ -43,6 +46,7 @@ class RaceInfo extends \App\Entities\RaceInfo implements \Doctrine\ORM\Proxy\Int
         'raceName' => [parent::class, 'raceName', null],
         'raceNum' => [parent::class, 'raceNum', null],
         'rotation' => [parent::class, 'rotation', null],
+        'updatedAt' => [parent::class, 'updatedAt', null],
         'weather' => [parent::class, 'weather', null],
     ];
 

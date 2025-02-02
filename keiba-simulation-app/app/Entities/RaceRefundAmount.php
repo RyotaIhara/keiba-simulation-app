@@ -17,9 +17,9 @@ class RaceRefundAmount
     #[ORM\JoinColumn(name: "race_info_id", referencedColumnName: "id", nullable: false)]
     private RaceInfo $raceInfo;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entities\HowToBuyMst")]
-    #[ORM\JoinColumn(name: "how_to_buy_mst_id", referencedColumnName: "id", nullable: false)]
-    private HowToBuyMst $howToBuyMst;
+    #[ORM\ManyToOne(targetEntity: "App\Entities\BettingTypeMst")]
+    #[ORM\JoinColumn(name: "betting_type_mst_id", referencedColumnName: "id", nullable: false)]
+    private BettingTypeMst $bettingTypeMst;
 
     #[ORM\Column(type: "integer", length: 4, name: "pattern")]
     private int $pattern;
@@ -29,6 +29,12 @@ class RaceRefundAmount
 
     #[ORM\Column(type: "integer", name: "refund_amount")]
     private int $refundAmount;
+
+    #[ORM\Column(type: "datetime", name: "created_at", nullable: true)]
+    private ?\DateTime $createdAt;
+
+    #[ORM\Column(type: "datetime", name: "updated_at", nullable: true)]
+    private ?\DateTime $updatedAt;
 
     public function getId(): int
     {
@@ -45,14 +51,14 @@ class RaceRefundAmount
         $this->raceInfo = $raceInfo;
     }
 
-    public function getHowToBuyMst(): HowToBuyMst
+    public function getBettingTypeMst(): BettingTypeMst
     {
-        return $this->howToBuyMst;
+        return $this->bettingTypeMst;
     }
 
-    public function setHowToBuyMst(HowToBuyMst $howToBuyMst): void
+    public function setBettingTypeMst(BettingTypeMst $bettingTypeMst): void
     {
-        $this->howToBuyMst = $howToBuyMst;
+        $this->bettingTypeMst = $bettingTypeMst;
     }
 
     public function getPattern(): int
@@ -84,5 +90,25 @@ class RaceRefundAmount
     public function setRefundAmount(int $refundAmount): void
     {
         $this->refundAmount = $refundAmount;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTime $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTime $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
     }
 }

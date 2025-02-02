@@ -5,7 +5,7 @@ namespace App\Services\Scraping;
 use App\Services\Scraping\ScrapingBase;
 use App\Services\Crud\RaceInfoService;
 use App\Services\Crud\RaceRefundAmountService;
-use App\Services\Crud\HowToBuyMstService;
+use App\Services\Crud\BettingTypeMstService;
 require 'vendor/autoload.php';
 
 class BatchRefundAmountService extends ScrapingBase
@@ -91,19 +91,18 @@ class BatchRefundAmountService extends ScrapingBase
                 return False; 
             }
 
+            // インサート用配列を作成するループ
             $collectionForInsert = [];
-
             foreach ($refundAmountResult as $key => $value) {
-                $howToBuyMstService = app(HowToBuyMstService::class);
+                $bettingTypeMstService = app(BettingTypeMstService::class);
                 $whereParams = [
-                    'howToBuyCode' => $key
+                    'bettingTypeCode' => $key
                 ];
-                $howToBuyMstData = $howToBuyMstService->getHowToBuyMstByUniqueColumn($whereParams);
+                $bettingTypeMst = $bettingTypeMstService->getBettingTypeMstByUniqueColumn($whereParams);
 
                 $createParamsForRaceRefundAmount = array(
-                    'race_info_id' => $raceInfo->getId(),
-                    'how_to_buy_mst_id' => $howToBuyMstData->getId(),
-                    'how_to_buy_code' => $key
+                    'raceInfo' => $raceInfo,
+                    'bettingTypeMst' => $bettingTypeMst
                 );
 
                 $pattern = 1;
@@ -111,8 +110,8 @@ class BatchRefundAmountService extends ScrapingBase
                     foreach ($value['Result'][0] as $resultUmaBan) {
 
                         $createParamsForRaceRefundAmount['pattern'] = $pattern;
-                        $createParamsForRaceRefundAmount['result_uma_ban'] = $resultUmaBan;
-                        $createParamsForRaceRefundAmount['refund_amount'] = str_replace([",", "円"], "", $value['Payout'][$pattern-1]);
+                        $createParamsForRaceRefundAmount['resultUmaBan'] = $resultUmaBan;
+                        $createParamsForRaceRefundAmount['refundAmount'] = str_replace([",", "円"], "", $value['Payout'][$pattern-1]);
                         $pattern++;
 
                         array_push($collectionForInsert, $createParamsForRaceRefundAmount);
@@ -121,40 +120,39 @@ class BatchRefundAmountService extends ScrapingBase
                 else if ($key === 'wide') {
                     foreach ($value['Result'] as $resultUmaBan) {
                         $createParamsForRaceRefundAmount['pattern'] = $pattern;
-                        $createParamsForRaceRefundAmount['result_uma_ban'] = implode(",", $resultUmaBan);
-                        $createParamsForRaceRefundAmount['refund_amount'] = str_replace([",", "円"], "", $value['Payout'][$pattern-1]);
+                        $createParamsForRaceRefundAmount['resultUmaBan'] = implode(",", $resultUmaBan);
+                        $createParamsForRaceRefundAmount['refundAmount'] = str_replace([",", "円"], "", $value['Payout'][$pattern-1]);
                         $pattern++;
 
                         array_push($collectionForInsert, $createParamsForRaceRefundAmount);
                     }
                 } else {
                     $createParamsForRaceRefundAmount['pattern'] = $pattern;
-                    $createParamsForRaceRefundAmount['result_uma_ban'] = implode(",", $value['Result'][0]);
-                    $createParamsForRaceRefundAmount['refund_amount'] = str_replace([",", "円"], "", $value['Payout']);
+                    $createParamsForRaceRefundAmount['resultUmaBan'] = implode(",", $value['Result'][0]);
+                    $createParamsForRaceRefundAmount['refundAmount'] = str_replace([",", "円"], "", $value['Payout']);
 
                     array_push($collectionForInsert, $createParamsForRaceRefundAmount);
                 }
             }
 
+            // インサート作業実施
             foreach ($collectionForInsert as $createParamsForRaceRefundAmount) {
-                $raceInfoService = app(RaceInfoService::class);
-                $raceInfo = $raceInfoService->getRaceInfo($createParamsForRaceRefundAmount['race_info_id']);
-
-                $whereParamsForHowToBuyMst = [
-                    'howToBuyCode' => $createParamsForRaceRefundAmount['how_to_buy_code'],
-                ];
-                $howToBuyMstData = $howToBuyMstService->getHowToBuyMstByUniqueColumn($whereParamsForHowToBuyMst);
+                $raceInfo = $createParamsForRaceRefundAmount['raceInfo'];
+                $bettingTypeMst = $createParamsForRaceRefundAmount['bettingTypeMst'];
+                $pattern = $createParamsForRaceRefundAmount['pattern'];
 
                 $whereParamsForRaceRefundAmount = [
                     'raceInfo' => $raceInfo,
-                    'howToBuyMst' => $howToBuyMstData,
-                    'pattern' => $createParamsForRaceRefundAmount['pattern']
+                    'bettingTypeMst' => $bettingTypeMst,
+                    'pattern' => $pattern
                 ];
                 $raceRefundAmountData = $raceRefundAmountService->getRaceRefundAmountByUniqueColumn($whereParamsForRaceRefundAmount);
+
+                // データがなければ作成
                 if (empty($raceRefundAmountData)) {
                     $raceRefundAmountService->createRaceRefundAmount($createParamsForRaceRefundAmount);
                 } else {
-                    echo 'すでに' . 'race_info_id：' . $raceInfo->getId() . ', how_to_buy_mst_code：' . $createParamsForRaceRefundAmount['how_to_buy_code'] . ', pattern：' . $pattern . 'のデータは存在します', " \n";
+                    echo 'すでに' . 'race_info_id：' . $raceInfo->getId() . ', betting_type_name' . $bettingTypeMst->getBettingTypeName() . ', pattern：' . $pattern . 'のデータは存在します', " \n";
                 }
             }
 

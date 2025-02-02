@@ -42,10 +42,13 @@ class RaceRefundAmountService extends CrudBase
     {
         $raceRefundAmount = new RaceRefundAmount();
 
-        $raceRefundAmount = $this->setRaceRefundAmount($raceRefundAmount, $data);
+        $updateFlag = False;
+        $raceRefundAmount = $this->setRaceRefundAmount($raceRefundAmount, $data, $updateFlag);
 
         $this->entityManager->persist($raceRefundAmount);
         $this->entityManager->flush();
+
+        return $raceRefundAmount;
 
     }
 
@@ -55,10 +58,13 @@ class RaceRefundAmountService extends CrudBase
         $raceRefundAmountRepository = $this->entityManager->getRepository(RaceRefundAmount::class);
         $raceRefundAmount = $raceRefundAmountRepository->find($id);
 
-        $raceRefundAmount = $this->setRaceRefundAmount($raceRefundAmount, $data);
+        $updateFlag = True;
+        $raceRefundAmount = $this->setRaceRefundAmount($raceRefundAmount, $data, $updateFlag);
 
         $this->entityManager->persist($raceRefundAmount);
         $this->entityManager->flush();
+
+        return $raceRefundAmount;
     }
 
     /** race_refund_amountのデータを物理削除する **/
@@ -74,19 +80,19 @@ class RaceRefundAmountService extends CrudBase
     }
 
     /** createやupdate用にデータをセットする **/
-    private function setRaceRefundAmount($raceRefundAmount, $data)
+    private function setRaceRefundAmount($raceRefundAmount, $data, $updateFlag)
     {
-        $raceInfoService = app(RaceInfoService::class);
-        $raceInfo = $raceInfoService->getRaceInfo($this->getValue($data, 'race_info_id', 'raceInfoId'));
-
-        $howToBuyMstService = app(HowToBuyMstService::class);
-        $howToBuyMst = $howToBuyMstService->getHowToBuyMst($this->getValue($data, 'how_to_buy_mst_id', 'howToBuyMstId'));
-
-        $raceRefundAmount->setRaceInfo($raceInfo);
-        $raceRefundAmount->setHowToBuyMst($howToBuyMst);
+        $raceRefundAmount->setRaceInfo($this->getValue($data, 'race_info', 'raceInfo'));
+        $raceRefundAmount->setBettingTypeMst($this->getValue($data, 'betting_type_mst', 'bettingTypeMst'));
         $raceRefundAmount->setPattern($data['pattern']);
-        $raceRefundAmount->setResultUmaBan($this->getValue($data, 'result_uma_ban', 'resultUmaBan '));
+        $raceRefundAmount->setResultUmaBan($this->getValue($data, 'result_uma_ban', 'resultUmaBan'));
         $raceRefundAmount->setRefundAmount($this->getValue($data, 'refund_amount', 'refundAmount'));
+
+        if (!$updateFlag) {
+            $raceRefundAmount->setCreatedAt(new \DateTime(date('Y-m-d H:i:s')));
+        }
+        $raceRefundAmount->setUpdatedAt(new \DateTime(date('Y-m-d H:i:s')));
+
         return $raceRefundAmount;
     }
 

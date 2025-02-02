@@ -54,10 +54,10 @@ class BatchUpdateVotingRefundAmountCommand extends Command
         $otherWhereParams = [
             'hitStatus' => 0
         ];
-        $votingRecordDatas = $batchUpdateVotingRefundAmountService->getVotingRecordByFromToDate($fromRaceDate, $toRaceDate, $otherWhereParams);
+        $votingRecordDetailDatas = $batchUpdateVotingRefundAmountService->getVotingRecordDetailByFromToDate($fromRaceDate, $toRaceDate, $otherWhereParams);
 
-        foreach ($votingRecordDatas as $votingRecord) {
-            $batchUpdateVotingRefundAmountService->updateVotingRefundAmount($votingRecord);
+        foreach ($votingRecordDetailDatas as $data) {
+            $batchUpdateVotingRefundAmountService->updateVotingRefundAmount($data);
         }
 
         $this->info('バッチ処理が成功しました！');

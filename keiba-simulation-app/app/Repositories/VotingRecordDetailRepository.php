@@ -20,7 +20,7 @@ class VotingRecordDetailRepository extends EntityRepository
         if (isset($otherWhereParams['hitStatus']) && !is_null($otherWhereParams['hitStatus']))
         {
             $queryBuilder
-                ->andWhere('vr.hitStatus = :hitStatus')
+                ->andWhere('vrd.hitStatus = :hitStatus')
                 ->setParameter('hitStatus', $otherWhereParams['hitStatus']);
         }
         if (isset($otherWhereParams['jyoCd']) && !is_null($otherWhereParams['jyoCd']))
