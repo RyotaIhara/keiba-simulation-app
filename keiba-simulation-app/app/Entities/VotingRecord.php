@@ -31,8 +31,17 @@ class VotingRecord
     #[ORM\JoinColumn(name: "betting_type_mst_id", referencedColumnName: "id", nullable: false)]
     private ?BettingTypeMst $bettingTypeMst = null;
 
-    #[ORM\OneToMany(mappedBy: "votingRecord", targetEntity: VotingRecordDetail::class, cascade: ["persist", "remove"], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: "votingRecord", targetEntity: VotingRecordDetail::class, cascade: ["remove"], orphanRemoval: true)]
     private Collection $votingRecordDetails;
+
+    #[ORM\OneToMany(mappedBy: "votingRecord", targetEntity: BoxVotingRecord::class, cascade: ["remove"], orphanRemoval: true)]
+    private Collection $boxVotingRecord;
+
+    #[ORM\OneToMany(mappedBy: "votingRecord", targetEntity: NagashiVotingRecord::class, cascade: ["remove"], orphanRemoval: true)]
+    private Collection $nagashiVotingRecord;
+
+    #[ORM\OneToMany(mappedBy: "votingRecord", targetEntity: FormationVotingRecord::class, cascade: ["remove"], orphanRemoval: true)]
+    private Collection $formationVotingRecord;
 
     #[ORM\Column(type: "datetime", name: "created_at", nullable: true)]
     private ?\DateTime $createdAt;

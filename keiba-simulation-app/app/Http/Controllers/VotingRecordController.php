@@ -352,9 +352,9 @@ class VotingRecordController extends Controller
     /** 投票データの削除 **/
     public function destroy(string $id)
     {
-        //$this->votingRecordService->deleteVotingRecord($id);
+        $this->votingRecordService->deleteVotingRecord($id);
 
-        //return redirect()->route('voting_record.index')->with('success', 'データの削除が完了しました');
+        return redirect()->route('voting_record.index')->with('success', 'データの削除が完了しました');
     }
 
     // 通常方式でのデータ作成
