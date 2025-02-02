@@ -22,8 +22,6 @@ Route::withoutMiddleware([\App\Http\Middleware\CheckLogin::class])->group(functi
 
 // 投票機能関連
 Route::get('voting_record/totalling', [VotingRecordController::class, 'totalling'])->name('voting_record.totalling');
-Route::get('voting_record/createSpecialMethod', [VotingRecordController::class, 'createSpecialMethod'])->name('voting_record.createSpecialMethod');
-Route::post('voting_record/storeSpecialMethod', [VotingRecordController::class, 'storeSpecialMethod'])->name('voting_record.storeSpecialMethod');
 Route::get('voting_record/{id}/copy', [VotingRecordController::class, 'copy'])->name('voting_record.copy');
 Route::get('/voting_record', [VotingRecordController::class, 'index'])->name('voting_record.index'); // 一覧表示
 Route::get('/voting_record/create', [VotingRecordController::class, 'create'])->name('voting_record.create'); // 新規作成フォーム

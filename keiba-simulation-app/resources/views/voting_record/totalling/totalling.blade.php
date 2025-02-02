@@ -8,6 +8,15 @@
 
         @include('voting_record.totalling.totalling_search')
 
+        {{-- 投票一覧へボタン --}}
+        <div style="margin-left: 10px;">
+            <a href="
+                {{ route('voting_record.index', [
+                    'race_date' => request('end_race_date', \Carbon\Carbon::today()->format('Y-m-d'))
+                ])}}" 
+                class="btn btn-success">投票一覧へ</a>
+        </div>
+
         <div class="card">
             <div class="card-header">
                 <h4 class="mb-0">

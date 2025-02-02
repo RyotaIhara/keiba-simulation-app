@@ -15,6 +15,7 @@ use App\Services\Crud\HowToBuyMstService;
 use App\Services\Crud\RacecourseMstService;
 use App\Services\Crud\BettingTypeMstService;
 use App\Services\General\VotingRecordGeneral;
+use App\Services\General\AuthGeneral;
 use Illuminate\Http\Request;
 
 class VotingRecordController extends Controller
@@ -30,23 +31,37 @@ class VotingRecordController extends Controller
     private $racecourseMstService;
     private $votingRecordGeneral;
     private $bettingTypeMstService;
+    private $authGeneral;
 
     const DEFAULT_PAZE = 1;
     const RACE_NUM_DATAS = [1,2,3,4,5,6,7,8,9,10,11,12];
 
-    public function __construct()
-    {
-        $this->votingRecordService = app(VotingRecordService::class);
-        $this->votingRecordDetailService = app(VotingRecordDetailService::class);
-        $this->boxVotingRecordService = app(BoxVotingRecordService::class);
-        $this->formationVotingRecordService = app(FormationVotingRecordService::class);
-        $this->nagashiVotingRecordService = app(NagashiVotingRecordService::class);
-        $this->raceScheduleService = app(RaceScheduleService::class);
-        $this->howToBuyMstService = app(HowToBuyMstService::class);
-        $this->raceInfoService = app(RaceInfoService::class);
-        $this->racecourseMstService = app(RacecourseMstService::class);
-        $this->bettingTypeMstService = app(BettingTypeMstService::class);
-        $this->votingRecordGeneral = app(VotingRecordGeneral::class);
+    public function __construct(
+        VotingRecordService $votingRecordService,
+        VotingRecordDetailService $votingRecordDetailService,
+        BoxVotingRecordService $boxVotingRecordService,
+        FormationVotingRecordService $formationVotingRecordService,
+        NagashiVotingRecordService $nagashiVotingRecordService,
+        RaceScheduleService $raceScheduleService,
+        HowToBuyMstService $howToBuyMstService,
+        RaceInfoService $raceInfoService,
+        RacecourseMstService $racecourseMstService,
+        BettingTypeMstService $bettingTypeMstService,
+        VotingRecordGeneral $votingRecordGeneral,
+        AuthGeneral $authGeneral
+    ) {
+        $this->votingRecordService = $votingRecordService;
+        $this->votingRecordDetailService = $votingRecordDetailService;
+        $this->boxVotingRecordService = $boxVotingRecordService;
+        $this->formationVotingRecordService = $formationVotingRecordService;
+        $this->nagashiVotingRecordService = $nagashiVotingRecordService;
+        $this->raceScheduleService = $raceScheduleService;
+        $this->howToBuyMstService = $howToBuyMstService;
+        $this->raceInfoService = $raceInfoService;
+        $this->racecourseMstService = $racecourseMstService;
+        $this->bettingTypeMstService = $bettingTypeMstService;
+        $this->votingRecordGeneral = $votingRecordGeneral;
+        $this->authGeneral = $authGeneral;
     }
 
     /** 投票一覧（日付ごと） **/
@@ -69,7 +84,8 @@ class VotingRecordController extends Controller
         $searchForm = [
             'raceDate' => $raceDate,
             'raceNum' => $raceNum,
-            'racecourse' => $racecourse
+            'racecourse' => $racecourse,
+            'userId' => $this->authGeneral->getLoginUser()->getId()
         ];
         $tmpResult = $this->votingRecordService->getVotingRecordsIndexViewDatas($page, $pageSize, $searchForm);
 
@@ -99,6 +115,7 @@ class VotingRecordController extends Controller
         // 日付以外でクエリのwhere句に入る項目
         $otherWhereParams = [
             'jyoCd' => $racecourse,
+            'userId' => $this->authGeneral->getLoginUser()->getId()
         ];
         $totallingDatas = $this->votingRecordDetailService->getVotingRecordDetailByFromToDate($fromRaceDate, $toRaceDate, $otherWhereParams);
 
@@ -202,11 +219,15 @@ class VotingRecordController extends Controller
     /** 投票データ作成（実施） **/
     public function store(Request $request)
     {
+        $raceDate = $request->input('race_date');
+        $jyoCd = $request->input('racecourse_mst');
+        $raceNum = $request->input('race_num');
+
         // 投票データ作成にrace_infoが必要なので取得
         $raceInfo = $this->raceInfoService->getRaceInfoByUniqueColumn([
-            'raceDate' => new \DateTime($request->input('race_date')),
-            'jyoCd' => $request->input('racecourse_mst'),
-            'raceNum' => $request->input('race_num'),
+            'raceDate' => new \DateTime($raceDate),
+            'jyoCd' => $jyoCd,
+            'raceNum' => $raceNum,
         ]);
 
         if (empty($raceInfo)) {
@@ -268,7 +289,12 @@ class VotingRecordController extends Controller
 
         switch ($resultCode) {
             case '01':
-                return redirect()->route('voting_record.index')->with('success', '新しいデータの作成が完了しました');
+                //return redirect()->route('voting_record.index')->with('success', '新しいデータの作成が完了しました');
+                return redirect()->route('voting_record.index', [
+                        'race_date' => $raceDate,
+                        'racecourse' => $jyoCd
+                    ])
+                    ->with('success', '新しいデータの作成が完了しました');
                 break;
             case '11':
                 return redirect()->route('voting_record.create')->with('error', '買い目が正しくないです');

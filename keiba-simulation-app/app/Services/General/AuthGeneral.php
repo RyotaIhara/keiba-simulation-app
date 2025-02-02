@@ -57,22 +57,7 @@ class AuthGeneral extends GeneralBase
         return False;
     }
 
-    /** ログインしているユーザー名を取得 **/
-    public function getSessionUserName() {
-        if (!empty(Session::get('sessionUserName'))) {
-            return Session::get('sessionUserName');
-        }
-
-        $authToken = Session::get('auth_token');
-        $loginSession = $this->loginSessionService->getLoginSessionByToken($authToken);
-
-        if (!empty($loginSession->getUser()->getUserName())) {
-            return $loginSession->getuser()->getUserName();
-        };
-
-        return "";
-    }
-
+    /** ログインしているユーザー情報を取得 **/
     public function getLoginUser() {
         $authToken = Session::get('auth_token');
         $loginSession = $this->loginSessionService->getLoginSessionByToken($authToken);

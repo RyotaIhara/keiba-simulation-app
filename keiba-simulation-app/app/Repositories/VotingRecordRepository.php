@@ -86,7 +86,7 @@ class VotingRecordRepository extends EntityRepository
             $sql .= " AND race_info.jyo_cd = :jyoCd";
         }
 
-        $sql .= " GROUP BY `voting_record`.`id`, hit_status_group.status_pattern;";
+        $sql .= " GROUP BY `voting_record`.`id`, hit_status_group.status_pattern";
         $sql .= " ORDER BY `voting_record`.`id` DESC";
 
         $stmt = $conn->executeQuery($sql, $whereParams);

@@ -23,7 +23,7 @@
             <ul class="navbar-nav">
                 @if ($authGeneralService->isLogin())
                     <li class="nav-item">
-                        <a class="nav-link" href="#">こんにちは、{{ $authGeneralService->getSessionUserName() }} さん！</a>
+                        <a class="nav-link" href="#">こんにちは、{{ $authGeneralService->getLoginUser()->getUsername() }} さん！</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/logout">ログアウト</a>

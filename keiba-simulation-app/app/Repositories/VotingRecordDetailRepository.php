@@ -11,12 +11,20 @@ class VotingRecordDetailRepository extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('vrd')
             ->addSelect('vr')
             ->addSelect('ri')
+            ->addSelect('u')
             ->innerJoin('vrd.votingRecord', 'vr')
             ->innerJoin('vr.raceInfo', 'ri')
+            ->innerJoin('vr.user', 'u')
             ->where('ri.raceDate BETWEEN :startDate AND :endDate')
             ->setParameter('startDate', $fromRaceDate)
             ->setParameter('endDate', $toRaceDate);
-        
+
+        if (isset($otherWhereParams['userId']) && !is_null($otherWhereParams['userId']))
+        {
+            $queryBuilder
+                ->andWhere('u.id = :userId')
+                ->setParameter('userId', $otherWhereParams['userId']);
+        }
         if (isset($otherWhereParams['hitStatus']) && !is_null($otherWhereParams['hitStatus']))
         {
             $queryBuilder

@@ -1,8 +1,5 @@
 ■やることリスト
 
-（１）
-ユーザー機能を作成する
-投票レコードにユーザーIDを付与する
+（３）
+投票データの編集、複製機能の作成
 
-（２）
-VotingRecordController.phpのcreateとEditでvotingRecordsIndexViewDataの取得はやめる

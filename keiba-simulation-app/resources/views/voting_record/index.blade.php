@@ -17,7 +17,12 @@
 
         {{-- 集計ボタン --}}
         <div style="margin-left: 10px;">
-            <a href="{{ route('voting_record.totalling') }}" class="btn btn-success">集計</a>
+            <a href="
+                {{ route('voting_record.totalling', [
+                    'start_race_date' => request('race_date', \Carbon\Carbon::today()->format('Y-m-d')),
+                    'end_race_date' => request('race_date', \Carbon\Carbon::today()->format('Y-m-d')),
+                ])}}" 
+                class="btn btn-success">集計</a>
         </div>
     </div>
 

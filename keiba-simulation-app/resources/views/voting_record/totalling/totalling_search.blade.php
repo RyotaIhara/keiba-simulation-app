@@ -3,14 +3,14 @@
     <h5 class="mb-3">検索条件</h5>
     <!-- レース日（開始） -->
     <div class="form-group mb-3" style="max-width: 500px;">
-        <label for="start_race_date">レース日</label>
+        <label for="start_race_date">レース日（開始）</label>
         <input type="date" id="start_race_date" name="start_race_date" class="form-control" 
                 value="{{ request('start_race_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
     </div>
 
     <!-- レース日（終了） -->
     <div class="form-group mb-3" style="max-width: 500px;">
-        <label for="end_race_date">レース日</label>
+        <label for="end_race_date">レース日（終了）</label>
         <input type="date" id="end_race_date" name="end_race_date" class="form-control" 
                 value="{{ request('end_race_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
     </div>
