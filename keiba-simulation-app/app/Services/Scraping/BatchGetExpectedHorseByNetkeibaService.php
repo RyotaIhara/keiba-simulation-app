@@ -2,19 +2,25 @@
 
 namespace App\Services\Scraping;
 
+use App\Services\Scraping\ScrapingBase;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use Symfony\Component\DomCrawler\Crawler;
+use App\Services\Crud\SettingServiceService;
+use App\Services\Crud\RaceInfoService;
+use App\Services\Crud\NetkeibaExpectedHorseService;
 
-class BatchGetExpectedHorseByNetkeibaService
+class BatchGetExpectedHorseByNetkeibaService extends ScrapingBase
 {
     protected $client;
     protected $cookieJar;
 
     public function __construct()
     {
+        parent::__construct();
+
         $this->client = new Client([
-            'base_uri' => 'https://regist.netkeiba.com/',
+            'base_uri' => self::$LOGIN_BASE_URL,
             'cookies' => true, // クッキーを保持
         ]);
         $this->cookieJar = new CookieJar();
@@ -23,10 +29,14 @@ class BatchGetExpectedHorseByNetkeibaService
     /**
      * Netkeiba にログインして推奨馬を取得する
      */
-    public function loginAndGetExpectedHorseLocalRaceByNetkeiba($loginId, $password, $raceId)
+    public function loginAndGetExpectedHorseLocalRaceByNetkeiba($raceId)
     {
+        $settingService = app(SettingServiceService::class);
+        $loginId = $settingService->getSettingService('netkeiba_loginId')->getSettingValue();
+        $password = $settingService->getSettingService('netkeiba_password')->getSettingValue();
+
         // 1. ログインリクエスト
-        $loginUrl = 'https://regist.netkeiba.com/account/';
+        $loginUrl = self::$LOGIN_URL;
         $loginResponse = $this->client->request('POST', $loginUrl, [
             'form_params' => [
                 'pid' => 'login',
@@ -66,7 +76,7 @@ class BatchGetExpectedHorseByNetkeibaService
             $results = [];
 
             $crawler->filter('div.DataPickupHorseWrap dl')->each(function ($node) use (&$results) {
-                $horseNumber = $node->filter('span.Umaban_Num')->text();
+                $umaBan = $node->filter('span.Umaban_Num')->text();
                 $horseName = $node->filter('a.data_top_horse_link')->text();
                 $horseLink = $node->filter('a.data_top_horse_link')->attr('href');
 
@@ -76,7 +86,7 @@ class BatchGetExpectedHorseByNetkeibaService
                 });
 
                 $results[] = [
-                    'horseNumber' => $horseNumber,
+                    'umaBan' => $umaBan,
                     'horseName' => $horseName,
                     'horseLink' => $horseLink,
                     'featureDatas' => $featureDatas,
@@ -87,6 +97,26 @@ class BatchGetExpectedHorseByNetkeibaService
         } catch (\Exception $e) {
             echo "データの取得に失敗しました\n" . $e;
             return [];
+        }
+    }
+
+    public function insertExpectedHorseData($expectHorses, $raceInfoCheckParams) {
+        $raceInfoService = app(RaceInfoService::class);
+        $netkeibaExpectedHorseService = app(NetkeibaExpectedHorseService::class);
+
+        $raceInfo = $raceInfoService->getRaceInfoByUniqueColumn($raceInfoCheckParams);
+        if (empty($raceInfo)) {
+            echo "race_infoにデータが存在しません \n";
+            return False; 
+        }
+
+        foreach ($expectHorses as $horse) {
+            $insertParams = [
+                'raceInfo' => $raceInfo,
+                'umaBan' => $horse['umaBan'],
+                'featureDatas' =>implode(",", $horse['featureDatas']),
+            ];
+            $netkeibaExpectedHorseService->createNetkeibaExpectedHorse($insertParams);
         }
     }
 }

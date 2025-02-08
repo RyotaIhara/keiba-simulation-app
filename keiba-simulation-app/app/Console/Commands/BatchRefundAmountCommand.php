@@ -41,6 +41,7 @@ class BatchRefundAmountCommand extends Command
 
     /** 定数 **/
     const DEFAULT_START_RACE_NUM = 1;
+    const DEFAULT_END_RACE_NUM = 12;
 
     /**
      * Execute the console command.
@@ -55,7 +56,7 @@ class BatchRefundAmountCommand extends Command
         $toRaceDate = $this->option('toRaceDate') ?: NULL;
         $optionRaceId = $this->option('raceId') ?: NULL;
         $startRaceNum = $this->option('startRaceNum') ?: self::DEFAULT_START_RACE_NUM;
-        $endRaceNum = $this->option('endRaceNum') ?: 0;
+        $endRaceNum = $this->option('endRaceNum') ?: self::DEFAULT_END_RACE_NUM;
 
         if (!(is_null($fromRaceDate) && is_null($toRaceDate)) || !is_null($optionRaceId)) {
             //この場合はうまくいくので処理続行
@@ -111,7 +112,7 @@ class BatchRefundAmountCommand extends Command
                 }
 
                 // 集計終了レースが指定されている場合
-                if ($endRaceNum !== 0) {
+                if ($endRaceNum !== self::DEFAULT_END_RACE_NUM) {
                     $raceCount = $endRaceNum;
                 }
 
