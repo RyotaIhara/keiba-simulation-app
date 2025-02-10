@@ -2,12 +2,35 @@
 
 namespace App\Services\Scraping;
 
-use App\Services\Scraping\ScrapingBase;
+use App\Services\Scraping\BatchRaceBaseService;
 use App\Services\Crud\RaceInfoService;
 use App\Services\Crud\RaceCardService;
 
-class BatchRaceInfoImportService extends ScrapingBase
+class BatchRaceInfoImportService extends BatchRaceBaseService
 {
+    /** BatchRaceInfoImportCommandのメイン処理をここに実装 **/
+    public function mainExec($raceId) {
+        $year = substr($raceId, 0, 4);
+        $jyoCd = substr($raceId, 4, 2);
+        $month = substr($raceId, 6, 2);
+        $day = substr($raceId, 8, 2);
+        $raceNum = substr($raceId, 10, 2);
+
+        $raceInfoData = $this->getLocalRaceInfoByNetkeiba($raceId);
+
+        if (!empty($raceInfoData)) {
+            $raceInfoCheckParams = [
+                'raceDate' => new \DateTime($year . '-' . $month . '-' . $day),
+                'jyoCd' => $jyoCd,
+                'raceNum' => $raceNum,
+            ];
+
+            $this->insertRaceInfoCard($raceInfoData, $raceInfoCheckParams);
+        } else {
+            echo "netkeibaからレース情報を取得できませんでした \n";
+        }
+    }
+
     /** Netkeibaのサイトから地方競馬のレース情報を取得する **/
     public function getLocalRaceInfoByNetkeiba($raceId) {
         $scrapingUrl = self::$NETKEIBA_LOCAL_RACE_DOMAIN_URL . 'race/shutuba.html?race_id=' . $raceId;
