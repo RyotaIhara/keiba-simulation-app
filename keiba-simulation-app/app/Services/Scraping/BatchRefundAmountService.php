@@ -2,14 +2,33 @@
 
 namespace App\Services\Scraping;
 
-use App\Services\Scraping\ScrapingBase;
+use App\Services\Scraping\BatchRaceBaseService;
 use App\Services\Crud\RaceInfoService;
 use App\Services\Crud\RaceRefundAmountService;
 use App\Services\Crud\BettingTypeMstService;
 require 'vendor/autoload.php';
 
-class BatchRefundAmountService extends ScrapingBase
+class BatchRefundAmountService extends BatchRaceBaseService
 {
+    /** BatchRaceInfoImportCommandのメイン処理をここに実装 **/
+    public function mainExec($raceId) {
+        $year = substr($raceId, 0, 4);
+        $jyoCd = substr($raceId, 4, 2);
+        $month = substr($raceId, 6, 2);
+        $day = substr($raceId, 8, 2);
+        $raceNum = substr($raceId, 10, 2);
+
+        $refundAmountResult = $this->getLocalRaceRefundAmountByNetkeiba($raceId);
+
+        $raceInfoCheckParams = [
+            'raceDate' => new \DateTime($year . '-' . $month . '-' . $day),
+            'jyoCd' => $jyoCd,
+            'raceNum' => $raceNum,
+        ];
+
+        $this->insertRaceRefundAmount($refundAmountResult, $raceInfoCheckParams);
+    }
+
     /** 地方競馬の払戻金情報を取得する **/
     public function getLocalRaceRefundAmountByNetkeiba($raceId) {
         $scrapingUrl = self::$NETKEIBA_LOCAL_RACE_DOMAIN_URL . 'race/result.html?race_id=' . $raceId;

@@ -24,7 +24,9 @@ class BatchRaceInfoImportCommand extends Command
     protected $signature = 'app:batch-race-info-import-command 
                             {--fromRaceDate= : 開始日付} 
                             {--toRaceDate= : 終了日付}
-                            {--raceId= : レースID}';
+                            {--raceId= : レースID}
+                            {--startRaceNum= : 集計をスタートするレース番号}
+                            {--endRaceNum= : 集計を終了するレース番号}';
 
     /**
      * The console command description.
@@ -34,6 +36,10 @@ class BatchRaceInfoImportCommand extends Command
     protected $description = '
         レース情報をnetkeibaのサイトから取得して、DBにインサートする。
     ';
+
+    /** 定数 **/
+    const DEFAULT_START_RACE_NUM = 1;
+    const DEFAULT_END_RACE_NUM = 12;
 
     /**
      * Execute the console command.
@@ -45,6 +51,8 @@ class BatchRaceInfoImportCommand extends Command
         $fromRaceDate = $this->option('fromRaceDate') ?: NULL;
         $toRaceDate = $this->option('toRaceDate') ?: NULL;
         $optionRaceId = $this->option('raceId') ?: NULL;
+        $startRaceNum = $this->option('startRaceNum') ?: self::DEFAULT_START_RACE_NUM;
+        $endRaceNum = $this->option('endRaceNum') ?: self::DEFAULT_END_RACE_NUM;
 
         if (!(is_null($fromRaceDate) && is_null($toRaceDate)) || !is_null($optionRaceId)) {
             //この場合はうまくいくので処理続行
@@ -53,7 +61,7 @@ class BatchRaceInfoImportCommand extends Command
             return 0;
         }
 
-        $batchRaceInfoImportService->raceLoopExec($fromRaceDate, $toRaceDate, $optionRaceId);
+        $batchRaceInfoImportService->raceLoopExec($fromRaceDate, $toRaceDate, $optionRaceId, $startRaceNum, $endRaceNum);
 
         $this->info('バッチ処理が成功しました！!');
 

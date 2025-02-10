@@ -8,7 +8,7 @@ use App\Services\Scraping\ScrapingBase;
 
 class BatchRaceBaseService extends ScrapingBase
 {
-    public function raceLoopExec($fromRaceDate, $toRaceDate, $optionRaceId)
+    public function raceLoopExec($fromRaceDate, $toRaceDate, $optionRaceId, $startRaceNum, $endRaceNum)
     {
         $raceScheduleService = app(RaceScheduleService::class);
         $baceBatchGeneral = app(RaceBatchGeneral::class);
@@ -25,7 +25,11 @@ class BatchRaceBaseService extends ScrapingBase
                 list($year, $month, $day) = explode('-', $raceSchedule->getRaceDate()->format('Y-m-d'));
                 $raceCount = $baceBatchGeneral->getRaceCountByDateAndJyo($raceSchedule);
 
-                for ($raceNum = 1; $raceNum <= $raceCount; $raceNum++) {
+                for ($raceNum = $startRaceNum; $raceNum <= $raceCount; $raceNum++) {
+                    if ($raceNum === $endRaceNum) {
+                        break;
+                    }
+
                     $raceId = $year . $raceSchedule->getJyoCd() . $month . $day . str_pad($raceNum, 2, '0', STR_PAD_LEFT);
                     $this->mainExec($raceId);
                 }

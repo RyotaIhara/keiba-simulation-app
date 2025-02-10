@@ -4,8 +4,6 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Services\Scraping\BatchRefundAmountService;
-use App\Services\Scraping\BatchRaceInfoImportService;
-use App\Services\Crud\RaceScheduleService;
 
 /***
     実行コマンド
@@ -48,8 +46,6 @@ class BatchRefundAmountCommand extends Command
      */
     public function handle()
     {
-        $batchRaceInfoImportService = app(BatchRaceInfoImportService::class);
-        $raceScheduleService = app(RaceScheduleService::class);
         $batchRefundAmountService = app(BatchRefundAmountService::class);
 
         $fromRaceDate = $this->option('fromRaceDate') ?: NULL;
@@ -65,76 +61,7 @@ class BatchRefundAmountCommand extends Command
             return 0;
         }
 
-        $raceScheduleList = $raceScheduleService->getRaceSchedulesByDate($fromRaceDate, $toRaceDate);
-
-        // もしレースIDがオプションで指定されていたらそれをもとに処理を行う
-        if (!is_null($optionRaceId)) {
-            try {
-                $year = substr($optionRaceId, 0, 4);
-                $jyoCd = substr($optionRaceId, 4, 2);
-                $month = substr($optionRaceId, 6, 2);
-                $day = substr($optionRaceId, 8, 2);
-                $raceNum = substr($optionRaceId, 10, 2);
-
-                $refundAmountResult = $batchRefundAmountService->getLocalRaceRefundAmountByNetkeiba($optionRaceId);
-
-                $raceInfoCheckParams = [
-                    'raceDate' => new \DateTime($year . '-' . $month . '-' . $day),
-                    'jyoCd' => $jyoCd,
-                    'raceNum' => $raceNum,
-                ];
-
-                $batchRefundAmountService->insertRaceRefundAmount($refundAmountResult, $raceInfoCheckParams);
-
-                return 1;
-            } catch (\Exception $ex) {
-                echo 'BatchRefundAmountCommandの実行に失敗しました';
-                return 0;
-            }
-        }
-
-        // レーススケジュールデータから、DBにレース情報を登録する
-        foreach ($raceScheduleList as $raceSchedule) {
-            $jyoCd = $raceSchedule->getJyoCd();
-            list($year, $month, $day) = explode('-', $raceSchedule->getRaceDate()->format('Y-m-d'));
-
-            try {
-                $tmpRaceNum = 1;
-                $raceCount = 0;
-                $loopCnt = 0;
-
-                // レース数を取得する（raceIdの作成に何レース目かの情報が必要なため）
-                while ($raceCount === 0 || $loopCnt <= 12) {
-                    $loopCnt++;
-
-                    $raceIdForGetRaceCount = $year . $jyoCd . $month . $day . str_pad($tmpRaceNum, 2, '0', STR_PAD_LEFT);
-                    $raceCount = $batchRaceInfoImportService->getCountOfRaces($raceIdForGetRaceCount);
-                }
-
-                // 集計終了レースが指定されている場合
-                if ($endRaceNum !== self::DEFAULT_END_RACE_NUM) {
-                    $raceCount = $endRaceNum;
-                }
-
-                for ($raceNum = $startRaceNum; $raceNum <= $raceCount; $raceNum++) {
-                    $raceId = $year . $jyoCd . $month . $day . str_pad($raceNum, 2, '0', STR_PAD_LEFT);
-
-                    $refundAmountResult = $batchRefundAmountService->getLocalRaceRefundAmountByNetkeiba($raceId);
-
-                    $raceInfoCheckParams = [
-                        'raceDate' => new \DateTime($year . '-' . $month . '-' . $day),
-                        'jyoCd' => $jyoCd,
-                        'raceNum' => $raceNum,
-                    ];
-
-                    $batchRefundAmountService->insertRaceRefundAmount($refundAmountResult, $raceInfoCheckParams);
-
-                }
-
-            } catch (\Exception $ex) {
-                echo 'BatchRefundAmountCommandの実行に失敗しました';
-            }
-        }
+        $batchRefundAmountService->raceLoopExec($fromRaceDate, $toRaceDate, $optionRaceId, $startRaceNum, $endRaceNum);
 
         $this->info('バッチ処理が成功しました！');
     }
