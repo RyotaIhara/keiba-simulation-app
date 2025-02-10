@@ -10,7 +10,7 @@ require 'vendor/autoload.php';
 
 class BatchRefundAmountService extends BatchRaceBaseService
 {
-    /** BatchRaceInfoImportCommandのメイン処理をここに実装 **/
+    /** BatchRefundAmountCommandのメイン処理をここに実装 **/
     public function mainExec($raceId) {
         $year = substr($raceId, 0, 4);
         $jyoCd = substr($raceId, 4, 2);

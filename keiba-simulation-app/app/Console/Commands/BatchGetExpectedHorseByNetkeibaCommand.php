@@ -4,8 +4,6 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Services\Scraping\BatchGetExpectedHorseByNetkeibaService;
-use App\Services\Scraping\BatchRaceInfoImportService;
-use App\Services\Crud\RaceScheduleService;
 
 /***
     実行コマンド
@@ -55,8 +53,6 @@ class BatchGetExpectedHorseByNetkeibaCommand extends Command
         $endRaceNum = $this->option('endRaceNum') ?: self::DEFAULT_END_RACE_NUM;
 
         $batchGetExpectedHorseByNetkeibaService = app(BatchGetExpectedHorseByNetkeibaService::class);
-        $raceScheduleService = app(RaceScheduleService::class);
-        $batchRaceInfoImportService = app(BatchRaceInfoImportService::class);
 
         if (!(is_null($fromRaceDate) && is_null($toRaceDate)) || !is_null($optionRaceId)) {
             //この場合はうまくいくので処理続行
@@ -65,66 +61,8 @@ class BatchGetExpectedHorseByNetkeibaCommand extends Command
             return 0;
         }
 
-        // もしレースIDがオプションで指定されていたらそれをもとに処理を行う
-        if (!is_null($optionRaceId)) {
-            try {
-                $year = substr($optionRaceId, 0, 4);
-                $jyoCd = substr($optionRaceId, 4, 2);
-                $month = substr($optionRaceId, 6, 2);
-                $day = substr($optionRaceId, 8, 2);
-                $raceNum = substr($optionRaceId, 10, 2);
+        $batchGetExpectedHorseByNetkeibaService->raceLoopExec($fromRaceDate, $toRaceDate, $optionRaceId, $startRaceNum, $endRaceNum);
 
-                $expectHorses = $batchGetExpectedHorseByNetkeibaService->loginAndGetExpectedHorseLocalRaceByNetkeiba($optionRaceId);
-
-                return 1;
-            } catch (\Exception $ex) {
-                echo 'BatchGetExpectedHorseByNetkeibaCommandの実行に失敗しました';
-                return 0;
-            }
-        }
-
-        // レーススケジュールデータから、DBに予想馬を登録する
-        $raceScheduleList = $raceScheduleService->getRaceSchedulesByDate($fromRaceDate, $toRaceDate);
-        foreach ($raceScheduleList as $raceSchedule) {
-            $jyoCd = $raceSchedule->getJyoCd();
-            list($year, $month, $day) = explode('-', $raceSchedule->getRaceDate()->format('Y-m-d'));
-
-            try {
-                $tmpRaceNum = 1;
-                $raceCount = 0;
-                $loopCnt = 0;
-
-                // レース数を取得する（raceIdの作成に何レース目かの情報が必要なため）
-                while ($raceCount === 0 || $loopCnt <= 12) {
-                    $loopCnt++;
-
-                    $raceIdForGetRaceCount = $year . $jyoCd . $month . $day . str_pad($tmpRaceNum, 2, '0', STR_PAD_LEFT);
-                    $raceCount = $batchRaceInfoImportService->getCountOfRaces($raceIdForGetRaceCount);
-                }
-
-                // 集計終了レースが指定されている場合
-                if ($endRaceNum !== 0) {
-                    $raceCount = $endRaceNum;
-                }
-
-                for ($raceNum = $startRaceNum; $raceNum <= $raceCount; $raceNum++) {
-                    $raceId = $year . $jyoCd . $month . $day . str_pad($raceNum, 2, '0', STR_PAD_LEFT);
-                    $expectHorses = $batchGetExpectedHorseByNetkeibaService->loginAndGetExpectedHorseLocalRaceByNetkeiba($raceId);
-
-                    $raceInfoCheckParams = [
-                        'raceDate' => new \DateTime($year . '-' . $month . '-' . $day),
-                        'jyoCd' => $jyoCd,
-                        'raceNum' => $raceNum,
-                    ];
-                    $batchGetExpectedHorseByNetkeibaService->insertExpectedHorseData($expectHorses, $raceInfoCheckParams);
-
-                }
-
-            } catch (\Exception $ex) {
-                echo 'BatchGetExpectedHorseByNetkeibaCommandの実行に失敗しました' . $ex->getMessage();
-            }
-        }
-
-        $this->info('「batch-get-horse-race-expected-command」バッチ処理が完了しました！');
+        $this->info('バッチ処理が成功しました！');
     }
 }

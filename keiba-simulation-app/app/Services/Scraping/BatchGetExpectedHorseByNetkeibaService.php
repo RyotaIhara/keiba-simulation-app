@@ -2,7 +2,7 @@
 
 namespace App\Services\Scraping;
 
-use App\Services\Scraping\ScrapingBase;
+use App\Services\Scraping\BatchRaceBaseService;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use Symfony\Component\DomCrawler\Crawler;
@@ -10,7 +10,7 @@ use App\Services\Crud\SettingServiceService;
 use App\Services\Crud\RaceInfoService;
 use App\Services\Crud\NetkeibaExpectedHorseService;
 
-class BatchGetExpectedHorseByNetkeibaService extends ScrapingBase
+class BatchGetExpectedHorseByNetkeibaService extends BatchRaceBaseService
 {
     protected $client;
     protected $cookieJar;
@@ -24,6 +24,24 @@ class BatchGetExpectedHorseByNetkeibaService extends ScrapingBase
             'cookies' => true, // クッキーを保持
         ]);
         $this->cookieJar = new CookieJar();
+    }
+
+    /** BatchRefundAmountCommandのメイン処理をここに実装 **/
+    public function mainExec($raceId) {
+        $year = substr($raceId, 0, 4);
+        $jyoCd = substr($raceId, 4, 2);
+        $month = substr($raceId, 6, 2);
+        $day = substr($raceId, 8, 2);
+        $raceNum = substr($raceId, 10, 2);
+
+        $expectHorses = $this->loginAndGetExpectedHorseLocalRaceByNetkeiba($raceId);
+
+        $raceInfoCheckParams = [
+            'raceDate' => new \DateTime($year . '-' . $month . '-' . $day),
+            'jyoCd' => $jyoCd,
+            'raceNum' => $raceNum,
+        ];
+        $this->insertExpectedHorseData($expectHorses, $raceInfoCheckParams);
     }
 
     /**
