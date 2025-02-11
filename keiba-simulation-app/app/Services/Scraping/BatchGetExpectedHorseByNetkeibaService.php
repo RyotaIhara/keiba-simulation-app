@@ -8,7 +8,7 @@ use GuzzleHttp\Cookie\CookieJar;
 use Symfony\Component\DomCrawler\Crawler;
 use App\Services\Crud\SettingServiceService;
 use App\Services\Crud\RaceInfoService;
-use App\Services\Crud\NetkeibaExpectedHorseService;
+use App\Services\Crud\Simulation\NetkeibaExpectedHorseService;
 
 class BatchGetExpectedHorseByNetkeibaService extends BatchRaceBaseService
 {
@@ -26,7 +26,7 @@ class BatchGetExpectedHorseByNetkeibaService extends BatchRaceBaseService
         $this->cookieJar = new CookieJar();
     }
 
-    /** BatchRefundAmountCommandのメイン処理をここに実装 **/
+    /** バッチのメイン処理をここに記載 **/
     public function mainExec($raceId) {
         $year = substr($raceId, 0, 4);
         $jyoCd = substr($raceId, 4, 2);

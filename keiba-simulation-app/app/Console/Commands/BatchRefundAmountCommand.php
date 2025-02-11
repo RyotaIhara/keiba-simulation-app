@@ -48,9 +48,9 @@ class BatchRefundAmountCommand extends Command
     {
         $batchRefundAmountService = app(BatchRefundAmountService::class);
 
-        $fromRaceDate = $this->option('fromRaceDate') ?: NULL;
-        $toRaceDate = $this->option('toRaceDate') ?: NULL;
-        $optionRaceId = $this->option('raceId') ?: NULL;
+        $fromRaceDate = $this->option('fromRaceDate') ?: null;
+        $toRaceDate = $this->option('toRaceDate') ?: null;
+        $optionRaceId = $this->option('raceId') ?: null;
         $startRaceNum = $this->option('startRaceNum') ?: self::DEFAULT_START_RACE_NUM;
         $endRaceNum = $this->option('endRaceNum') ?: self::DEFAULT_END_RACE_NUM;
 
@@ -61,7 +61,7 @@ class BatchRefundAmountCommand extends Command
             return 0;
         }
 
-        $batchRefundAmountService->raceLoopExec($fromRaceDate, $toRaceDate, $optionRaceId, $startRaceNum, $endRaceNum);
+        $batchRefundAmountService->raceLoopExec($fromRaceDate, $toRaceDate, $optionRaceId, $startRaceNum, $endRaceNum, $otherParams=[]);
 
         $this->info('バッチ処理が成功しました！');
     }

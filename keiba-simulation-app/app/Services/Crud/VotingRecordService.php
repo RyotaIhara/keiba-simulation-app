@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entities\VotingRecord;
 use App\Services\Crud\CrudBase;
 use App\Services\General\AuthGeneral;
+use App\Services\Crud\UserService;
 
 class VotingRecordService extends CrudBase
 {
@@ -77,8 +78,15 @@ class VotingRecordService extends CrudBase
     private function setVotingRecord($votingRecord, $data, $updateFlag)
     {
         $authGeneral = app(AuthGeneral::class);
+        $userService = app(UserService::class);
 
-        $votingRecord->setUser($authGeneral->getLoginUser());
+        if (!is_null($this->getValue($data, 'user_id', 'userId'))) {
+            $votingRecord->setUser($userService->getUser($this->getValue($data, 'user_id', 'userId')));
+        } else {
+            // ログインユーザー
+            $votingRecord->setUser($authGeneral->getLoginUser());
+        }
+
         $votingRecord->setRaceInfo($this->getValue($data, 'race_info', 'raceInfo'));
         $votingRecord->setHowToBuyMst($this->getValue($data, 'how_to_buy_mst', 'howToBuyMst'));
         $votingRecord->setBettingTypeMst($this->getValue($data, 'betting_type_mst', 'bettingTypeMst'));

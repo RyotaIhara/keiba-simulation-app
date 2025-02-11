@@ -13,7 +13,7 @@ class RaceCard
     #[ORM\Column(type: "integer")]
     private int $id;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entities\RaceInfo")]
+    #[ORM\ManyToOne(targetEntity: "App\Entities\RaceInfo", inversedBy: "raceCardList")]
     #[ORM\JoinColumn(name: "race_info_id", referencedColumnName: "id", nullable: false)]
     private RaceInfo $raceInfo;
 

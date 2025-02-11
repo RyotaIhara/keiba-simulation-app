@@ -8,7 +8,7 @@ use App\Services\Scraping\ScrapingBase;
 
 class BatchRaceBaseService extends ScrapingBase
 {
-    public function raceLoopExec($fromRaceDate, $toRaceDate, $optionRaceId, $startRaceNum, $endRaceNum)
+    public function raceLoopExec($fromRaceDate, $toRaceDate, $optionRaceId, $startRaceNum, $endRaceNum, $otherParams)
     {
         $raceScheduleService = app(RaceScheduleService::class);
         $baceBatchGeneral = app(RaceBatchGeneral::class);
@@ -16,7 +16,7 @@ class BatchRaceBaseService extends ScrapingBase
         try {
             // もしレースIDがオプションで指定されていたらそれをもとに処理を行う
             if (!is_null($optionRaceId)) {
-                $this->mainExec($optionRaceId);
+                $this->mainExec($optionRaceId, $otherParams);
             }
 
             // レーススケジュールデータのループを回す
@@ -31,15 +31,15 @@ class BatchRaceBaseService extends ScrapingBase
                     }
 
                     $raceId = $year . $raceSchedule->getJyoCd() . $month . $day . str_pad($raceNum, 2, '0', STR_PAD_LEFT);
-                    $this->mainExec($raceId);
+                    $this->mainExec($raceId, $otherParams);
                 }
             }
         } catch (\Exception $ex) {
-            return 0;
+            echo $ex->getMessage() . "\n";
         }
     }
 
-    public function mainExec($raceId) {
+    public function mainExec($raceId, $otherParams) {
         // 処理は子クラスに実装
     }
 }

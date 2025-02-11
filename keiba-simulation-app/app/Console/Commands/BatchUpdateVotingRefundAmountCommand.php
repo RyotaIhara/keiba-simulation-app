@@ -41,8 +41,8 @@ class BatchUpdateVotingRefundAmountCommand extends Command
     {
         $batchUpdateVotingRefundAmountService = app(BatchUpdateVotingRefundAmountService::class);
 
-        $fromRaceDate = $this->option('fromRaceDate') ?: NULL;
-        $toRaceDate = $this->option('toRaceDate') ?: NULL;
+        $fromRaceDate = $this->option('fromRaceDate') ?: null;
+        $toRaceDate = $this->option('toRaceDate') ?: null;
 
         if (!(is_null($fromRaceDate) && is_null($toRaceDate))) {
             //この場合はうまくいくので処理続行

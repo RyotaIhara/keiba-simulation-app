@@ -9,7 +9,7 @@ use App\Services\Crud\RaceCardService;
 class BatchRaceInfoImportService extends BatchRaceBaseService
 {
     /** BatchRaceInfoImportCommandのメイン処理をここに実装 **/
-    public function mainExec($raceId) {
+    public function mainExec($raceId, $otherParams) {
         $year = substr($raceId, 0, 4);
         $jyoCd = substr($raceId, 4, 2);
         $month = substr($raceId, 6, 2);

@@ -11,7 +11,7 @@ class Kernel extends ConsoleKernel
      * Artisanコマンドの登録
      */
     protected $commands = [
-        \App\Console\Commands\BatchRaceScheduleCommand::class,
+        //
     ];
 
     /**

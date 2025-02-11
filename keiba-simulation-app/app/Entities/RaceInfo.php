@@ -2,6 +2,8 @@
 
 namespace App\Entities;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: "App\Repositories\RaceInfoRepository")]
@@ -48,6 +50,14 @@ class RaceInfo
 
     #[ORM\Column(type: "datetime", name: "updated_at", nullable: true)]
     private ?\DateTime $updatedAt;
+
+    #[ORM\OneToMany(mappedBy: "raceInfo", targetEntity: RaceCard::class, cascade: ["remove"], orphanRemoval: true)]
+    private Collection $raceCardList;
+
+    public function __construct()
+    {
+        $this->raceCardList = new ArrayCollection();
+    }
 
     public function getId(): int
     {
@@ -172,6 +182,14 @@ class RaceInfo
     public function setUpdatedAt(?\DateTime $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
+    }
+
+    /**
+     * 関連する race_card を取得する
+     */
+    public function getRaceCardList(): Collection
+    {
+        return $this->raceCardList;
     }
 
 }

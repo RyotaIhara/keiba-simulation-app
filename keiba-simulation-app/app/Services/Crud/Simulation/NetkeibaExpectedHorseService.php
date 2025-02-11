@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Crud;
+namespace App\Services\Crud\Simulation;
 
 use App\Entities\NetkeibaExpectedHorse;
 use App\Services\Crud\CrudBase;
@@ -22,6 +22,13 @@ class NetkeibaExpectedHorseService extends CrudBase
     /** ユニークなカラムを指定してデータを1つ取得する **/
     public function getNetkeibaExpectedHorseByUniqueColumn($whereParams) {
         return $this->entityManager->getRepository(NetkeibaExpectedHorse::class)->findOneBy($whereParams);
+    }
+
+    /** race_info_idから紐づくnetkeiba_expected_horse のデータを取得する **/
+    public function getNetkeibaExpectedHorsesByRaceInfo($raceInfo) {
+        return $this->entityManager->getRepository(NetkeibaExpectedHorse::class)->findBy([
+            'raceInfo' => $raceInfo
+        ]);
     }
 
     /** netkeiba_expected_horseにデータを作成する **/

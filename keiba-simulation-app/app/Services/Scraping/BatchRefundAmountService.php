@@ -11,7 +11,7 @@ require 'vendor/autoload.php';
 class BatchRefundAmountService extends BatchRaceBaseService
 {
     /** BatchRefundAmountCommandのメイン処理をここに実装 **/
-    public function mainExec($raceId) {
+    public function mainExec($raceId, $otherParams) {
         $year = substr($raceId, 0, 4);
         $jyoCd = substr($raceId, 4, 2);
         $month = substr($raceId, 6, 2);
