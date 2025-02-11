@@ -27,7 +27,7 @@ class BatchGetExpectedHorseByNetkeibaService extends BatchRaceBaseService
     }
 
     /** バッチのメイン処理をここに記載 **/
-    public function mainExec($raceId) {
+    public function mainExec($raceId, $otherParams) {
         $year = substr($raceId, 0, 4);
         $jyoCd = substr($raceId, 4, 2);
         $month = substr($raceId, 6, 2);
